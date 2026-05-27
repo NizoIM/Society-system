@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Dashboard</title>
+
+  <link rel="stylesheet" href="/css/Styling.css">
+  <script defer src="../js/staff.js"></script>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>STAFF</h2>
+
+  <a href="#" onclick="loadProfile()">My Profile</a>
+  <a href="#" onclick="loadQueries()">Queries</a>
+
+  <button class="logout-btn" onclick="logout()">
+    Logout
+  </button>
+</div>
+
+<div class="main">
+
+  <h2 class="page-title">Staff Dashboard</h2>
+
+  <section
+          class="card"
+          id="profile-section"
+  >
+
+    <h2>
+      My Profile
+    </h2>
+
+    <div id="profile">
+
+      <p>
+        Loading profile...
+      </p>
+
+    </div>
+
+  </section>
+  <!-- ================= PAYMENT ================= -->
+
+  <section
+          class="card"
+          id="payment-section"
+  >
+
+    <h2>
+      Upload Proof of Payment
+    </h2>
+    <input
+            type="number"
+            id="amount"
+            placeholder="Enter Amount"
+            step="0.01"
+            min="1"
+            required
+    />
+    <div class="form-group">
+
+      <input
+              type="file"
+              id="proofFile"
+              accept=".jpg,.jpeg,.png,.pdf"
+      >
+
+    </div>
+
+    <button
+            class="primary-btn"
+            onclick="uploadPayment()"
+    >
+      Upload Proof
+    </button>
+
+  </section>
+
+  <!-- ================= PAYMENT HISTORY ================= -->
+
+  <section class="card">
+
+    <h2>
+      Payment History
+    </h2>
+
+    <div class="table-container">
+
+      <table id="paymentTable">
+
+        <thead>
+
+        <tr>
+
+          <th>ID</th>
+          <th>Month</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>File</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <tr>
+
+          <td colspan="6">
+            Loading payments...
+          </td>
+
+        </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+  <!-- QUERIES TABLE -->
+  <div class="card">
+
+    <h3>Member Queries</h3>
+
+    <input
+            type="text"
+            id="search"
+            placeholder="Search queries..."
+            oninput="searchQueries()"
+    />
+
+    <table id="queryTable">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Subject</th>
+        <th>Message</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+
+      <tbody></tbody>
+    </table>
+
+    <button onclick="loadQueries()">Refresh</button>
+
+  </div>
+
+</div>
+
+</body>
+</html>

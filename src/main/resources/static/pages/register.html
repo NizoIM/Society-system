@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="../css/Styling.css">
+</head>
+<body>
+
+<div class="auth-container">
+
+    <h2>Register</h2>
+
+    <form id="registerForm">
+
+        <input type="text" id="firstName" placeholder="First Name" required>
+
+        <input type="text" id="lastName" placeholder="Last Name" required>
+
+        <input type="email" id="email" placeholder="Email" required>
+
+        <input type="text" id="phone" placeholder="Phone Number" required>
+
+        <input type="password" id="password" placeholder="Password" required>
+
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+
+        <!-- ROLE (IMPORTANT for DB match) -->
+        <select id="role" required>
+            <option value="MEMBER">MEMBER</option>
+            <option value="STAFF">STAFF</option>
+            <option value="ADMIN">ADMIN</option>
+        </select>
+
+        <button type="submit">Register</button>
+
+    </form>
+
+    <p>
+        Already have an account?
+        <a href="login.html">Login</a>
+    </p>
+
+</div>
+
+<script src="../js/register.js"></script>
+
+</body>
+</html>
