@@ -2,8 +2,8 @@
 // CONFIG
 // =========================================
 
-const API_BASE =
-    "http://localhost:8080/api/admin";
+//const API_BASE = "http://localhost:8080/api/admin";
+const API_BASE = "https://society-kwgy.onrender.com/api/admin";
 
 const USERS_API =
     `${API_BASE}/users`;
@@ -712,7 +712,7 @@ function renderPayments(payments) {
                 <td>
 
                     <a
-                        href="http://localhost:8080/api/files/payment/${payment.id}"
+                        href="https://society-kwgy.onrender.com/api/files/payment/${payment.id}"
                         target="_blank">
 
                         View Proof
@@ -801,7 +801,7 @@ async function loadPaymentHistory() {
                     <td>
 
                         <a
-                            href="http://localhost:8080/api/files/payment/${payment.id}"
+                            href="https://society-kwgy.onrender.com/api/files/payment/${payment.id}"
                             target="_blank">
 
                             View Proof

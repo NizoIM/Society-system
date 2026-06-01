@@ -21,7 +21,7 @@ document.getElementById("registerForm")
         enabled: true
     };
 
-    fetch("http://localhost:8080/api/auth/register", {
+    fetch("${API_BASE}/api/auth/register", {
 
         method: "POST",
         headers: {

@@ -8,7 +8,9 @@ if (!token) {
 
 // ================= API =================
 
-const BASE_URL = "http://localhost:8080/api/staff";
+//const BASE_URL = "http://localhost:8080/api/staff";
+const API_URL =
+    "https://society-kwgy.onrender.com/api/auth/login";
 
 const QUERY_API = `${BASE_URL}/queries`;
 const PROFILE_API = `${BASE_URL}/profile`;
