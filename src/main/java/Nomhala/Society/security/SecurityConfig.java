@@ -57,7 +57,8 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/favicon.ico"
+                                "/favicon.ico",
+                                "/api/auth/**"
                         ).permitAll()
 
                         // ================= AUTH ENDPOINTS =================
