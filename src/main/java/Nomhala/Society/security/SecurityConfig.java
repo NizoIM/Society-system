@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,12 +24,15 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(
-            JwtAuthFilter jwtAuthFilter
-    ) {
-
-        this.jwtAuthFilter =
-                jwtAuthFilter;
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(
+                "/pages/**",
+                "/css/**",
+                "/js/**",
+                "/images/**",
+                "/favicon.ico"
+        );
     }
 
     @Bean
@@ -52,52 +56,37 @@ public class SecurityConfig {
                         )
                 )
 
-                // SECURITY RULES
+
                 .authorizeHttpRequests(auth -> auth
 
-                        // PUBLIC
+                        // ================= PUBLIC STATIC FILES =================
                         .requestMatchers(
-
                                 "/",
-
                                 "/index.html",
-
                                 "/pages/**",
-
                                 "/css/**",
-
                                 "/js/**",
-
                                 "/images/**",
-
-                                "/api/auth/**"
-
+                                "/favicon.ico"
                         ).permitAll()
 
-                        // ADMIN
-                        .requestMatchers(
-                                "/api/admin/**"
-                        ).hasRole("ADMIN")
+                        // ================= AUTH ENDPOINTS =================
+                        .requestMatchers("/api/auth/**").permitAll()
 
-                        // STAFF
-                        .requestMatchers(
-                                "/api/staff/**"
-                        ).hasAnyRole(
-                                "STAFF",
-                                "ADMIN"
-                        )
+                        // ================= ADMIN =================
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // MEMBER
-                        .requestMatchers(
-                                "/api/member/**"
-                        ).hasAnyRole(
-                                "MEMBER",
-                                "STAFF",
-                                "ADMIN"
-                        )
+                        // ================= STAFF =================
+                        .requestMatchers("/api/staff/**").hasAnyRole("STAFF", "ADMIN")
+
+                        // ================= MEMBER =================
+                        .requestMatchers("/api/member/**").hasAnyRole("MEMBER", "STAFF", "ADMIN")
+
+                        // ================= ERROR HANDLING =================
+                        .requestMatchers("/error").permitAll()
 
                         // EVERYTHING ELSE
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 // JWT FILTER
@@ -107,6 +96,14 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    public SecurityConfig(
+            JwtAuthFilter jwtAuthFilter
+    ) {
+
+        this.jwtAuthFilter =
+                jwtAuthFilter;
     }
 
     @Bean
