@@ -1,24 +1,72 @@
+// =========================================
+// CONFIG
+// =========================================
 
-// ================= AUTH =================
+const BASE_URL = "https://society-kwgy.onrender.com";
+
+const ADMIN_API = `${BASE_URL}/api/admin`;
+
+const USERS_API = `${ADMIN_API}/users`;
+const PAYMENTS_API = `${ADMIN_API}/payments`;
+const STATS_API = `${ADMIN_API}/stats`;
+const AI_SUMMARY_API = `${ADMIN_API}/ai-summary`;
+
+const PROFILE_API = `${ADMIN_API}/profile`;
+const QUERIES_API = `${ADMIN_API}/queries`;
 
 const token = localStorage.getItem("token");
-const email = localStorage.getItem("email");
 
-if (!token || !email) {
-    window.location.href = "/pages/login.html";
-}
-
-// ================= BASE URL =================
-
-const BASE_URL = "https://society-kwgy.onrender.com/api/member";
+let paymentChart = null;
 
 // ================= FIXED ENDPOINTS =================
 
-const PROFILE_API = `${BASE_URL}/profile/${email}`;
-const PAYMENT_API = `${BASE_URL}/payments/upload`;
-const PAYMENT_HISTORY_API = `${BASE_URL}/payments/${email}`;
-const QUERY_API = `${BASE_URL}/queries/${email}`;
+if (!token) {
+    redirectToLogin();
+}
 
+function authHeaders(json = true) {
+
+    const headers = {
+        Authorization: `Bearer ${token}`
+    };
+
+    if (json) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    return headers;
+}
+
+function redirectToLogin() {
+
+    localStorage.clear();
+
+    window.location.href = "/pages/login.html";
+}
+
+function logout() {
+    redirectToLogin();
+}
+
+// =========================================
+// SECTION NAVIGATION
+// =========================================
+
+function showSection(sectionId) {
+
+    document
+        .querySelectorAll(".dashboard-section")
+        .forEach(section => {
+            section.style.display = "none";
+        });
+
+    const target =
+        document.getElementById(sectionId);
+
+    if (target) {
+        target.style.display = "block";
+    }
+}
 // ================= HEADERS =================
 
 function authHeaders(includeJson = true) {
@@ -50,7 +98,11 @@ function handleUnauthorized(response) {
     return false;
 }
 
-// ================= PROFILE (WITH AVATAR FIXED) =================
+// ================= PROFILE =================
+
+// =========================================
+// PROFILE
+// =========================================
 
 async function loadProfile() {
 
@@ -61,47 +113,70 @@ async function loadProfile() {
             headers: authHeaders(false)
         });
 
-        console.log("PROFILE STATUS:", response.status);
-
-        if (handleUnauthorized(response)) return;
-
         if (!response.ok) {
-            const text = await response.text();
-            console.error("PROFILE ERROR:", text);
-            throw new Error("Failed profile");
+            throw new Error(
+                `Profile request failed (${response.status})`
+            );
         }
 
         const user = await response.json();
 
-        const profileEl = document.getElementById("profile");
-        if (!profileEl) return;
+        const profile =
+            document.getElementById("profile");
 
-        profileEl.innerHTML = `
+        if (!profile) return;
+
+        profile.innerHTML = `
+
             <div class="profile-card">
 
                 <div class="profile-avatar">
+
                     <img
                         src="https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            (user.firstName || "") + " " + (user.lastName || "")
+                            `${user.firstName || ""} ${user.lastName || ""}`
                         )}&background=0D8ABC&color=fff&size=120"
-                        alt="avatar"
-                    />
+                        alt="Profile Avatar">
+
                 </div>
 
                 <h2>
-                    ${user.firstName ?? ""}
-                    ${user.lastName ?? ""}
+                    ${user.firstName || ""}
+                    ${user.lastName || ""}
                 </h2>
 
-                <p><strong>Email:</strong> ${user.email ?? "N/A"}</p>
-                <p><strong>Phone:</strong> ${user.phone ?? "N/A"}</p>
-                <p><strong>Role:</strong> ${user.role ?? "MEMBER"}</p>
+                <p>
+                    <strong>Email:</strong>
+                    ${user.email || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    ${user.phone || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Role:</strong>
+                    ${user.role || "ADMIN"}
+                </p>
 
                 <p>
                     <strong>Status:</strong>
-                    <span class="${user.enabled ? "active" : "inactive"}">
-                        ${user.enabled ? "ACTIVE" : "DISABLED"}
+
+                    <span class="${
+                        user.enabled
+                            ? "active"
+                            : "inactive"
+                    }">
+
+                        ${
+                            user.enabled
+                                ? "ACTIVE"
+                                : "DISABLED"
+                        }
+
                     </span>
+
                 </p>
 
             </div>
@@ -109,7 +184,31 @@ async function loadProfile() {
 
     } catch (error) {
 
-        console.error("PROFILE LOAD FAILED:", error);
+        console.error(
+            "Profile load error:",
+            error
+        );
+
+        const profile =
+            document.getElementById("profile");
+
+        if (profile) {
+
+            profile.innerHTML = `
+
+                <div class="profile-card error">
+
+                    <h3>
+                        Failed to load profile
+                    </h3>
+
+                    <p>
+                        ${error.message}
+                    </p>
+
+                </div>
+            `;
+        }
     }
 }
 

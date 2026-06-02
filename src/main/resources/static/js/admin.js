@@ -1,20 +1,26 @@
 // =========================================
-// CONFIG
+// CONFIG (FIXED FOR RENDER)
 // =========================================
 
-const BASE_URL = "https://society-kwgy.onrender.com/api/admin";
+const BASE_URL = "https://society-kwgy.onrender.com";
 
-const USERS_API = ${API_BASE}/users;
-const QUERIES_API = ${API_BASE}/queries;
-const PAYMENTS_API = ${API_BASE}/payments;
-const PROFILE_API = ${API_BASE}/profile;
-const STATS_API = ${API_BASE}/stats;
-const PAYMENT_HISTORY_API = ${API_BASE}/payments/history;
-const PAYMENT_UPLOAD_API = ${API_BASE}/payments/upload;
-const AI_SUMMARY_API = ${API_BASE}/ai-summary;
+const ADMIN_API = `${BASE_URL}/api/admin`;
 
-const token =
-    localStorage.getItem("token");
+const USERS_API = `${ADMIN_API}/users`;
+const PAYMENTS_API = `${ADMIN_API}/payments`;
+const STATS_API = `${ADMIN_API}/stats`;
+const AI_SUMMARY_API = `${ADMIN_API}/ai-summary`;
+
+const MEMBER_API = `${BASE_URL}/api/member`;
+const STAFF_API = `${BASE_URL}/api/staff`;
+
+const QUERIES_API = `${BASE_URL}/api/member/queries`; // FIXED (NOT admin in most systems)
+const PROFILE_API = `${BASE_URL}/api/admin/profile`;
+
+const PAYMENT_HISTORY_API = `${BASE_URL}/api/member/payments/history`;
+const PAYMENT_UPLOAD_API = `${BASE_URL}/api/member/payments/upload`;
+
+const token = localStorage.getItem("token");
 
 let paymentChart = null;
 
@@ -380,32 +386,57 @@ async function loadProfile() {
 
         if (!profile || !user) return;
 
-        profile.innerHTML = `
+      profile.innerHTML = `
+      <div class="profile-card">
 
-            <div class="profile-card">
+          <div class="profile-avatar">
+              <img
+                  src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      `${user.firstName || ""} ${user.lastName || ""}`
+                  )}&background=0D8ABC&color=fff&size=180"
+                  alt="Admin Avatar">
+          </div>
 
-                <h2>
-                    ${escapeHtml(user.firstName)}
-                    ${escapeHtml(user.lastName)}
-                </h2>
+          <h2>
+              ${escapeHtml(user.firstName || "")}
+              ${escapeHtml(user.lastName || "")}
+          </h2>
 
-                <p>
-                    <strong>Email:</strong>
-                    ${escapeHtml(user.email)}
-                </p>
+          <p>
+              <strong>Email:</strong>
+              ${escapeHtml(user.email || "N/A")}
+          </p>
 
-                <p>
-                    <strong>Phone:</strong>
-                    ${escapeHtml(user.phone)}
-                </p>
+          <p>
+              <strong>Phone:</strong>
+              ${escapeHtml(user.phone || "N/A")}
+          </p>
 
-                <p>
-                    <strong>Role:</strong>
-                    ${escapeHtml(user.role)}
-                </p>
+          <p>
+              <strong>Role:</strong>
+              ${escapeHtml(user.role || "ADMIN")}
+          </p>
 
-            </div>
-        `;
+          <p>
+              <strong>Status:</strong>
+
+              <span class="${
+                  user.enabled
+                      ? "active"
+                      : "inactive"
+              }">
+
+                  ${
+                      user.enabled
+                          ? "ACTIVE"
+                          : "DISABLED"
+                  }
+
+              </span>
+          </p>
+
+      </div>
+      `;
 
     } catch (error) {
 
@@ -695,7 +726,7 @@ function renderPayments(payments) {
                 <td>
 
                     <a
-                        href="http://localhost:8080/api/files/payment/${payment.id}"
+                        href="${BASE_URL}/api/files/payment/${payment.id}"
                         target="_blank">
 
                         View Proof
@@ -784,7 +815,7 @@ async function loadPaymentHistory() {
                     <td>
 
                         <a
-                            href="http://localhost:8080/api/files/payment/${payment.id}"
+                             href="${BASE_URL}/api/files/payment/${payment.id}"
                             target="_blank">
 
                             View Proof
@@ -1008,7 +1039,7 @@ async function downloadStats() {
 
         const response =
             await fetch(
-                `${API_BASE}/payments/export`,
+                `${ADMIN_API}/payments/export`,
                 {
                     method: "GET",
 
@@ -1152,14 +1183,16 @@ function searchQueries() {
 
 window.showSection = showSection;
 window.logout = logout;
-window.uploadPayment = uploadPayment;
-window.approvePayment = approvePayment;
-window.rejectPayment = rejectPayment;
-window.downloadStats = downloadStats;
+window.addUser = addUser;
 window.editUser = editUser;
 window.deleteUser = deleteUser;
 window.searchUsers = searchUsers;
-window.addUser = addUser;
+window.searchQueries = searchQueries;
+window.respondToQuery = respondToQuery;
+window.approvePayment = approvePayment;
+window.rejectPayment = rejectPayment;
+window.downloadStats = downloadStats;
+window.uploadPayment = uploadPayment;
 
 // =========================================
 // INIT
