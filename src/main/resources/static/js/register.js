@@ -21,15 +21,15 @@ document.getElementById("registerForm")
         enabled: true
     };
 
-    fetch("${API_BASE}/api/auth/register", {
+   const API_BASE = "/api/auth";
 
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-
-    })
+   fetch(`${API_BASE}/register`, {
+       method: "POST",
+       headers: {
+           "Content-Type": "application/json"
+       },
+       body: JSON.stringify(data)
+   });
     .then(response => response.text())
     .then(result => {
 
