@@ -371,43 +371,52 @@ async function loadAiSummary() {
 }
 
 // =========================================
-// PROFILE
+// PROFILE (FIXED + SAFE)
 // =========================================
 
 async function loadProfile() {
 
     try {
 
-        const user =
-            await apiRequest(PROFILE_API);
+        const user = await apiRequest(PROFILE_API);
 
-        const profile =
-            document.getElementById("profile");
+        const profile = document.getElementById("profile");
 
-        if (!profile || !user) return;
+        if (!profile) return;
+
+        if (!user) {
+            profile.innerHTML = `<p>Failed to load profile</p>`;
+            return;
+        }
 
         profile.innerHTML = `
-
             <div class="profile-card">
 
                 <h2>
-                    ${escapeHtml(user.firstName)}
-                    ${escapeHtml(user.lastName)}
+                    ${escapeHtml(user.firstName || "")}
+                    ${escapeHtml(user.lastName || "")}
                 </h2>
 
                 <p>
                     <strong>Email:</strong>
-                    ${escapeHtml(user.email)}
+                    ${escapeHtml(user.email || "N/A")}
                 </p>
 
                 <p>
                     <strong>Phone:</strong>
-                    ${escapeHtml(user.phone)}
+                    ${escapeHtml(user.phone || "N/A")}
                 </p>
 
                 <p>
                     <strong>Role:</strong>
-                    ${escapeHtml(user.role)}
+                    ${escapeHtml(user.role || "ADMIN")}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    <span class="${user.enabled ? "active" : "inactive"}">
+                        ${user.enabled ? "ACTIVE" : "DISABLED"}
+                    </span>
                 </p>
 
             </div>
@@ -415,10 +424,19 @@ async function loadProfile() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Profile load error:", error);
+
+        const profile = document.getElementById("profile");
+
+        if (profile) {
+            profile.innerHTML = `
+                <p style="color:red;">
+                    Failed to load profile. Please try again.
+                </p>
+            `;
+        }
     }
 }
-
 // =========================================
 // ADD USER
 // =========================================

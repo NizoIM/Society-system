@@ -55,30 +55,37 @@ function handleUnauthorized(response) {
     return false;
 }
 
-// ================= LOAD PROFILE =================
+// ================= LOAD PROFILE (FIXED) =================
 
 async function loadProfile() {
 
     try {
 
-        const response = await fetch(
-            PROFILE_API,
-            {
-                method: "GET",
-                headers: authHeaders(false)
-            }
-        );
+        const response = await fetch(PROFILE_API, {
+            method: "GET",
+            headers: authHeaders(false)
+        });
+
+        // 🔴 DEBUG HELP (IMPORTANT)
+        console.log("PROFILE STATUS:", response.status);
 
         if (handleUnauthorized(response)) return;
 
         if (!response.ok) {
-            throw new Error("Failed profile");
+            const text = await response.text();
+            console.error("PROFILE ERROR RESPONSE:", text);
+            throw new Error("Failed to load profile");
         }
 
         const user = await response.json();
 
-        document.getElementById("profile").innerHTML = `
+        console.log("PROFILE DATA:", user);
 
+        const profileEl = document.getElementById("profile");
+
+        if (!profileEl) return;
+
+        profileEl.innerHTML = `
             <div class="profile-card">
 
                 <h2>
@@ -86,36 +93,14 @@ async function loadProfile() {
                     ${user.lastName ?? ""}
                 </h2>
 
-                <p>
-                    <strong>Email:</strong>
-                    ${user.email ?? "N/A"}
-                </p>
-
-                <p>
-                    <strong>Phone:</strong>
-                    ${user.phone ?? "N/A"}
-                </p>
-
-                <p>
-                    <strong>Role:</strong>
-                    ${user.role ?? "MEMBER"}
-                </p>
+                <p><strong>Email:</strong> ${user.email ?? "N/A"}</p>
+                <p><strong>Phone:</strong> ${user.phone ?? "N/A"}</p>
+                <p><strong>Role:</strong> ${user.role ?? "MEMBER"}</p>
 
                 <p>
                     <strong>Status:</strong>
-
-                    <span class="${
-                        user.enabled
-                            ? "active"
-                            : "inactive"
-                    }">
-
-                        ${
-                            user.enabled
-                                ? "ACTIVE"
-                                : "DISABLED"
-                        }
-
+                    <span class="${user.enabled ? "active" : "inactive"}">
+                        ${user.enabled ? "ACTIVE" : "DISABLED"}
                     </span>
                 </p>
 
@@ -124,12 +109,10 @@ async function loadProfile() {
 
     } catch (error) {
 
-        console.error(error);
-
+        console.error("PROFILE LOAD FAILED:", error);
         alert("Failed to load profile");
     }
 }
-
 // ================= SEND QUERY =================
 
 async function sendQuery() {
