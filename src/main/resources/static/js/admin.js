@@ -3,7 +3,7 @@
 // =========================================
 
 //const API_BASE = "http://localhost:8080/api/admin";
-const API_BASE = "https://society-kwgy.onrender.com/api/admin";
+const API_BASE = "https://society-kwgy.onrender.com/";
 
 const USERS_API =
     `${API_BASE}/users`;

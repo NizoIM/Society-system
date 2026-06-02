@@ -10,7 +10,7 @@ if (!token) {
 
 //const BASE_URL = "http://localhost:8080/api/staff";
 const API_URL =
-    "https://society-kwgy.onrender.com/api/auth/login";
+    "https://society-kwgy.onrender.com";
 
 const QUERY_API = `${BASE_URL}/queries`;
 const PROFILE_API = `${BASE_URL}/profile`;

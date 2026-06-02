@@ -12,7 +12,7 @@ if (!token || !email) {
 //const BASE_URL = "http://localhost:8080/api/member";
 
 const API_URL =
-        "https://society-kwgy.onrender.com/api/auth/login";
+        "https://society-kwgy.onrender.com";
 
 const PROFILE_API =
     `${BASE_URL}/profile/${email}`;
