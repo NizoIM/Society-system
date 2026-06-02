@@ -1,5 +1,5 @@
 document.getElementById("registerForm")
-.addEventListener("submit", function(e) {
+.addEventListener("submit", function (e) {
 
     e.preventDefault();
 
@@ -21,20 +21,18 @@ document.getElementById("registerForm")
         enabled: true
     };
 
-   const API_BASE = "/api/auth";
+    const API_BASE = "/api/auth";
 
-   fetch(`${API_BASE}/register`, {
-       method: "POST",
-       headers: {
-           "Content-Type": "application/json"
-       },
-       body: JSON.stringify(data)
-   });
+    fetch(`${API_BASE}/register`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
     .then(response => response.text())
     .then(result => {
-
         alert(result);
-
         window.location.href = "login.html";
     })
     .catch(error => console.log(error));
