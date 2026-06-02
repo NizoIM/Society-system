@@ -9,7 +9,15 @@
             name="viewport"
             content="width=device-width, initial-scale=0.5"
     >
+    <style>
+        .dashboard-section {
+            display: none;
+        }
 
+        #profile-section {
+            display: block;
+        }
+    </style>
 
     <title>Member Dashboard</title>
 
@@ -17,7 +25,7 @@
     <link rel="stylesheet" href="/css/Styling.css">
 
     <!-- JS -->
-    <script defer src="/js/member.js"></script>
+    <script defer src="/js/member.js?v=1"></script>
 
 </head>
 
@@ -37,15 +45,15 @@
 
             <nav class="nav-links">
 
-                <a href="#profile-section">
+                <a href="javascript:void(0)" onclick="showSection('profile-section')">
                     Dashboard
                 </a>
 
-                <a href="#query-section">
+                <a href="javascript:void(0)" onclick="showSection('query-section')">
                     My Queries
                 </a>
 
-                <a href="#payment-section">
+                <a href="javascript:void(0)" onclick="showSection('payment-section')">
                     Payments
                 </a>
 
