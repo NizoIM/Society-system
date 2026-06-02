@@ -2,32 +2,16 @@
 // CONFIG
 // =========================================
 
-const BASE_URL = "https://society-kwgy.onrender.com";
+const BASE_URL = "https://society-kwgy.onrender.com/api/admin";
 
-const USERS_API =
-    `${API_BASE}/users`;
-
-const QUERIES_API =
-    `${API_BASE}/queries`;
-
-
-const PAYMENTS_API =
-    `${API_BASE}/payments`;
-
-const PROFILE_API =
-    `${API_BASE}/profile`;
-
-const STATS_API =
-    `${API_BASE}/stats`;
-
-const PAYMENT_HISTORY_API =
-    `${API_BASE}/payments/history`;
-
-const PAYMENT_UPLOAD_API =
-    `${API_BASE}/payments/upload`;
-
-const AI_SUMMARY_API =
-    `${API_BASE}/ai-summary`;
+const USERS_API = ${API_BASE}/users;
+const QUERIES_API = ${API_BASE}/queries;
+const PAYMENTS_API = ${API_BASE}/payments;
+const PROFILE_API = ${API_BASE}/profile;
+const STATS_API = ${API_BASE}/stats;
+const PAYMENT_HISTORY_API = ${API_BASE}/payments/history;
+const PAYMENT_UPLOAD_API = ${API_BASE}/payments/upload;
+const AI_SUMMARY_API = ${API_BASE}/ai-summary;
 
 const token =
     localStorage.getItem("token");
