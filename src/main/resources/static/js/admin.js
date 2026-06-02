@@ -1,37 +1,26 @@
 // =========================================
-// CONFIG
+// CONFIG (FIXED FOR RENDER)
 // =========================================
 
-//const API_BASE = "http://localhost:8080/api/admin";
-const API_BASE = "https://society-kwgy.onrender.com/";
+const BASE_URL = "https://society-kwgy.onrender.com";
 
-const USERS_API =
-    `${API_BASE}/users`;
+const ADMIN_API = `${BASE_URL}/api/admin`;
 
-const QUERIES_API =
-    `${API_BASE}/queries`;
+const USERS_API = `${ADMIN_API}/users`;
+const PAYMENTS_API = `${ADMIN_API}/payments`;
+const STATS_API = `${ADMIN_API}/stats`;
+const AI_SUMMARY_API = `${ADMIN_API}/ai-summary`;
 
+const MEMBER_API = `${BASE_URL}/api/member`;
+const STAFF_API = `${BASE_URL}/api/staff`;
 
-const PAYMENTS_API =
-    `${API_BASE}/payments`;
+const QUERIES_API = `${BASE_URL}/api/member/queries`; // FIXED (NOT admin in most systems)
+const PROFILE_API = `${BASE_URL}/api/member/profile`;
 
-const PROFILE_API =
-    `${API_BASE}/profile`;
+const PAYMENT_HISTORY_API = `${BASE_URL}/api/member/payments/history`;
+const PAYMENT_UPLOAD_API = `${BASE_URL}/api/member/payments/upload`;
 
-const STATS_API =
-    `${API_BASE}/stats`;
-
-const PAYMENT_HISTORY_API =
-    `${API_BASE}/payments/history`;
-
-const PAYMENT_UPLOAD_API =
-    `${API_BASE}/payments/upload`;
-
-const AI_SUMMARY_API =
-    `${API_BASE}/ai-summary`;
-
-const token =
-    localStorage.getItem("token");
+const token = localStorage.getItem("token");
 
 let paymentChart = null;
 

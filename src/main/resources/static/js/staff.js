@@ -6,16 +6,16 @@ if (!token) {
     window.location.href = "/pages/login.html";
 }
 
-// ================= API =================
+// ================= API BASE =================
 
-//const BASE_URL = "http://localhost:8080/api/staff";
-const API_URL =
-    "https://society-kwgy.onrender.com";
+const API_BASE = "https://society-kwgy.onrender.com/api/staff";
 
-const QUERY_API = `${BASE_URL}/queries`;
-const PROFILE_API = `${BASE_URL}/profile`;
-const PAYMENT_API = `${BASE_URL}/payments/upload`;
-const PAYMENT_HISTORY_API = `${BASE_URL}/payments/history`;
+// ================= ENDPOINTS =================
+
+const QUERY_API = `${API_BASE}/queries`;
+const PROFILE_API = `${API_BASE}/profile`;
+const PAYMENT_API = `${API_BASE}/payments/upload`;
+const PAYMENT_HISTORY_API = `${API_BASE}/payments/history`;
 
 // ================= HEADERS =================
 
@@ -142,14 +142,11 @@ async function uploadPayment() {
 
         alert("Payment uploaded successfully");
 
-        document.getElementById("proofFile").value = "";
-        document.getElementById("amount").value = "";
-
         loadPaymentHistory();
 
     } catch (error) {
         console.error(error);
-        alert(error.message || "Failed to upload payment");
+        alert(error.message);
     }
 }
 
@@ -174,9 +171,7 @@ async function loadPaymentHistory() {
 
         if (!payments || payments.length === 0) {
             table.innerHTML = `
-                <tr>
-                    <td colspan="6">No payments uploaded</td>
-                </tr>
+                <tr><td colspan="6">No payments uploaded</td></tr>
             `;
             return;
         }
@@ -197,10 +192,8 @@ async function loadPaymentHistory() {
 
     } catch (error) {
         console.error(error);
-        alert("Failed to load payments");
     }
 }
-
 
 // ================= LOAD QUERIES =================
 
@@ -223,9 +216,7 @@ async function loadQueries() {
 
         if (!data || data.length === 0) {
             table.innerHTML = `
-                <tr>
-                    <td colspan="6">No queries found</td>
-                </tr>
+                <tr><td colspan="6">No queries found</td></tr>
             `;
             return;
         }
@@ -235,14 +226,13 @@ async function loadQueries() {
             table.innerHTML += `
                 <tr>
                     <td>${q.id}</td>
-                    <td>${escapeHtml(q.email || "-")}</td>
-                    <td>${escapeHtml(q.subject || "")}</td>
-                    <td>${escapeHtml(q.message || "")}</td>
-                    <td>${escapeHtml(q.status || "PENDING")}</td>
+                    <td>${escapeHtml(q.email)}</td>
+                    <td>${escapeHtml(q.subject)}</td>
+                    <td>${escapeHtml(q.message)}</td>
+                    <td>${escapeHtml(q.status)}</td>
 
                     <td>
-                        <button class="edit-btn"
-                            onclick="respondToQuery(${q.id})">
+                        <button onclick="respondToQuery(${q.id})">
                             Respond
                         </button>
                     </td>
@@ -267,7 +257,10 @@ async function respondToQuery(id) {
 
         const response = await fetch(`${QUERY_API}/${id}`, {
             method: "PUT",
-            headers: authHeaders(),
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
             body: JSON.stringify({
                 status: "RESOLVED",
                 response: responseMessage
@@ -285,7 +278,6 @@ async function respondToQuery(id) {
         alert(error.message);
     }
 }
-
 // ================= SEARCH =================
 
 function searchQueries() {

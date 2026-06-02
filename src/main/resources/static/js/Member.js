@@ -7,24 +7,16 @@ if (!token || !email) {
     window.location.href = "/pages/login.html";
 }
 
-// ================= API =================
+// ================= FIXED BASE URL =================
 
-//const BASE_URL = "http://localhost:8080/api/member";
+const API_BASE = "https://society-kwgy.onrender.com/api/member";
 
-const API_URL =
-        "https://society-kwgy.onrender.com";
+// ================= CORRECT ENDPOINTS =================
 
-const PROFILE_API =
-    `${BASE_URL}/profile/${email}`;
-
-const PAYMENT_API =
-    `${BASE_URL}/payment/${email}`;
-
-const PAYMENT_HISTORY_API =
-    `${BASE_URL}/payments/${email}`;
-
-const QUERY_API =
-    `${BASE_URL}/query`;
+const PROFILE_API = `${API_BASE}/profile/${email}`;
+const PAYMENT_API = `${API_BASE}/payments/${email}`;
+const PAYMENT_HISTORY_API = `${API_BASE}/payments/${email}`;
+const QUERY_API = `${API_BASE}/queries`;
 
 // ================= AUTH HEADERS =================
 
