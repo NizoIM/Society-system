@@ -1,44 +1,67 @@
 // =========================================
-// CONFIG
+// AUTH
 // =========================================
 
 const token = localStorage.getItem("token");
+const email = localStorage.getItem("email");
 
 if (!token) {
+    localStorage.clear();
     window.location.href = "/pages/login.html";
 }
 
-// ================= API BASE =================
+// =========================================
+// CONFIG
+// =========================================
 
-const API_BASE = "https://society-kwgy.onrender.com/api/admin";
+const BASE_URL = "https://society-kwgy.onrender.com";
 
-// ================= ENDPOINTS =================
+const ADMIN_API = `${BASE_URL}/api/admin`;
 
-const QUERY_API = `${API_BASE}/queries`;
-const PROFILE_API = `${API_BASE}/profile/{email}`;
-const PAYMENT_API = `${API_BASE}/payments/upload`;
-const PAYMENT_HISTORY_API = `${API_BASE}/payments/history`;
+// =========================================
+// ADMIN ENDPOINTS
+// =========================================
 
-//========AUTH HEADERS====================
+const PROFILE_API =
+    email
+        ? `${ADMIN_API}/profile/${encodeURIComponent(email)}`
+        : `${ADMIN_API}/profile`;
 
-function authHeaders(json = true) {
+const QUERIES_API = `${ADMIN_API}/queries`;
+
+const PAYMENT_UPLOAD_API =
+    `${ADMIN_API}/payments/upload`;
+
+const PAYMENT_HISTORY_API =
+    `${ADMIN_API}/payments/history`;
+
+// =========================================
+// HEADERS
+// =========================================
+
+function authHeaders(includeJson = true) {
 
     const headers = {
         Authorization: `Bearer ${token}`
     };
 
-    if (json) {
+    if (includeJson) {
         headers["Content-Type"] = "application/json";
     }
 
     return headers;
 }
 
-// ================= LOGOUT =================
+// =========================================
+// LOGOUT
+// =========================================
 
 function logout() {
+
     localStorage.clear();
-    window.location.href = "/pages/login.html";
+
+    window.location.href =
+        "/pages/login.html";
 }
 
 // =========================================
@@ -61,15 +84,23 @@ function showSection(sectionId) {
     }
 }
 
-// ================= 401 HANDLER =================
+// =========================================
+// 401 / 403 HANDLER
+// =========================================
 
 function handleUnauthorized(response) {
 
-    if (response.status === 401 || response.status === 403) {
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
 
         localStorage.clear();
-        alert("Session expired");
-        window.location.href = "/pages/login.html";
+
+        alert("Session expired. Please login again.");
+
+        window.location.href =
+            "/pages/login.html";
 
         return true;
     }
@@ -85,63 +116,166 @@ async function loadProfile() {
 
     try {
 
-        const response = await fetch(PROFILE_API, {
-            method: "GET",
-            headers: authHeaders(false)
-        });
+        const response =
+            await fetch(PROFILE_API, {
+                method: "GET",
+                headers: authHeaders(false)
+            });
 
-        if (!response.ok) throw new Error("Profile failed");
+        if (handleUnauthorized(response)) return;
 
-        const user = await response.json();
+        if (!response.ok) {
 
-        const profile = document.getElementById("profile");
+            throw new Error(
+                `Profile request failed (${response.status})`
+            );
+        }
+
+        const user =
+            await response.json();
+
+        const profile =
+            document.getElementById("profile");
+
         if (!profile) return;
 
+        const fullName =
+            `${user.firstName || ""} ${user.lastName || ""}`.trim();
+
+        const avatarUrl =
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                fullName || "Admin"
+            )}&background=0D8ABC&color=fff&size=120`;
+
         profile.innerHTML = `
+
             <div class="profile-card">
 
                 <div class="profile-avatar">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        (user.firstName || "") + " " + (user.lastName || "")
-                    )}&background=0D8ABC&color=fff&size=120">
+
+                    <img
+                        src="${avatarUrl}"
+                        alt="Profile Avatar"
+                    >
+
                 </div>
 
-                <h2>${user.firstName || ""} ${user.lastName || ""}</h2>
+                <h2>${fullName}</h2>
 
-                <p>Email: ${user.email || "N/A"}</p>
-                <p>Phone: ${user.phone || "N/A"}</p>
-                <p>Role: ${user.role || "ADMIN"}</p>
+                <p>
+                    <strong>Email:</strong>
+                    ${user.email || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    ${user.phone || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Role:</strong>
+                    ${user.role || "ADMIN"}
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    <span class="${
+                        user.enabled
+                            ? "active"
+                            : "inactive"
+                    }">
+
+                        ${
+                            user.enabled
+                                ? "ACTIVE"
+                                : "DISABLED"
+                        }
+
+                    </span>
+
+                </p>
 
             </div>
         `;
 
     } catch (error) {
-        console.error("Profile error:", error);
+
+        console.error(
+            "Profile load error:",
+            error
+        );
+
+        const profile =
+            document.getElementById("profile");
+
+        if (profile) {
+
+            profile.innerHTML = `
+
+                <div class="profile-card">
+
+                    <h3>
+                        Failed to load profile
+                    </h3>
+
+                    <p>
+                        ${error.message}
+                    </p>
+
+                </div>
+            `;
+        }
     }
 }
 
-// ================= QUERIES =================
+// =========================================
+// QUERIES
+// =========================================
 
 async function loadQueries() {
 
     try {
 
-        const response = await fetch(QUERIES_API, {
-            method: "GET",
-            headers: authHeaders(false)
-        });
+        const response =
+            await fetch(QUERIES_API, {
+                method: "GET",
+                headers: authHeaders(false)
+            });
 
-        if (!response.ok) throw new Error("Failed queries");
+        if (handleUnauthorized(response)) return;
 
-        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(
+                `Query request failed (${response.status})`
+            );
+        }
 
-        const table = document.querySelector("#myTable tbody");
+        const data =
+            await response.json();
+
+        const table =
+            document.querySelector(
+                "#queryTable tbody"
+            ) ||
+            document.querySelector(
+                "#myTable tbody"
+            );
+
         if (!table) return;
 
         table.innerHTML = "";
 
-        if (!data?.length) {
-            table.innerHTML = `<tr><td colspan="5">No queries found</td></tr>`;
+        if (!data || !data.length) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        No queries found
+                    </td>
+                </tr>
+            `;
+
             return;
         }
 
@@ -159,105 +293,177 @@ async function loadQueries() {
         });
 
     } catch (error) {
-        console.error("Queries error:", error);
+
+        console.error(
+            "Queries error:",
+            error
+        );
     }
 }
 
-// ================= PAYMENT HISTORY =================
+// =========================================
+// PAYMENT HISTORY
+// =========================================
 
 async function loadPaymentHistory() {
 
     try {
 
-        const response = await fetch(PAYMENT_HISTORY_API, {
-            method: "GET",
-            headers: authHeaders(false)
-        });
+        const response =
+            await fetch(
+                PAYMENT_HISTORY_API,
+                {
+                    method: "GET",
+                    headers: authHeaders(false)
+                }
+            );
 
-        if (!response.ok) throw new Error("Failed payments");
+        if (handleUnauthorized(response)) return;
 
-        const payments = await response.json();
+        if (!response.ok) {
 
-        const table = document.querySelector("#paymentTable tbody");
+            throw new Error(
+                `Payment request failed (${response.status})`
+            );
+        }
+
+        const payments =
+            await response.json();
+
+        const table =
+            document.querySelector(
+                "#paymentTable tbody"
+            );
+
         if (!table) return;
 
         table.innerHTML = "";
 
         if (!payments?.length) {
-            table.innerHTML = `<tr><td colspan="6">No payments</td></tr>`;
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6">
+                        No payments found
+                    </td>
+                </tr>
+            `;
+
             return;
         }
 
-        payments.forEach(p => {
+        payments.forEach(payment => {
 
             table.innerHTML += `
                 <tr>
-                    <td>${p.id}</td>
-                    <td>${p.paymentMonth ?? "-"}</td>
-                    <td>R${p.amount ?? 0}</td>
-                    <td>${p.status ?? "PENDING"}</td>
-                    <td>${p.paymentDate ?? "-"}</td>
-                    <td>${p.originalFileName ?? "-"}</td>
+                    <td>${payment.id}</td>
+                    <td>${payment.paymentMonth ?? "-"}</td>
+                    <td>R${payment.amount ?? 0}</td>
+                    <td>${payment.status ?? "PENDING"}</td>
+                    <td>${payment.paymentDate ?? "-"}</td>
+                    <td>${payment.originalFileName ?? "-"}</td>
                 </tr>
             `;
         });
 
     } catch (error) {
-        console.error("Payments error:", error);
+
+        console.error(
+            "Payment history error:",
+            error
+        );
     }
 }
 
-// ================= UPLOAD PAYMENT =================
+// =========================================
+// PAYMENT UPLOAD
+// =========================================
 
 async function uploadPayment() {
 
-    const file = document.getElementById("proofFile")?.files[0];
-    const amount = document.getElementById("amount")?.value;
+    const file =
+        document.getElementById("proofFile")?.files[0];
+
+    const amount =
+        document.getElementById("amount")?.value;
 
     if (!file || !amount) {
-        alert("Select file and amount");
+
+        alert(
+            "Select file and amount"
+        );
+
         return;
     }
 
-    const formData = new FormData();
+    const formData =
+        new FormData();
+
     formData.append("file", file);
     formData.append("amount", amount);
 
     try {
 
-        const response = await fetch(PAYMENT_UPLOAD_API, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body: formData
-        });
+        const response =
+            await fetch(
+                PAYMENT_UPLOAD_API,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization:
+                            `Bearer ${token}`
+                    },
+                    body: formData
+                }
+            );
+
+        if (handleUnauthorized(response)) return;
 
         if (!response.ok) {
-            throw new Error(await response.text());
+
+            throw new Error(
+                await response.text()
+            );
         }
 
-        alert("Payment uploaded");
+        alert(
+            "Payment uploaded successfully"
+        );
 
-        loadPaymentHistory();
+        await loadPaymentHistory();
 
     } catch (error) {
-        console.error("Upload error:", error);
+
+        console.error(
+            "Upload error:",
+            error
+        );
+
+        alert(error.message);
     }
 }
 
+// =========================================
+// GLOBALS
+// =========================================
+
 window.showSection = showSection;
 window.logout = logout;
-window.loadProfile = loadProfile;
-window.loadQueries = loadQueries;
-window.loadPaymentHistory = loadPaymentHistory;
 window.uploadPayment = uploadPayment;
 
-// ================= INIT =================
+// =========================================
+// INIT
+// =========================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    loadProfile();
-    loadQueries();
-    loadPaymentHistory();
-});
+        await loadProfile();
+
+        await Promise.all([
+            loadQueries(),
+            loadPaymentHistory()
+        ]);
+    }
+);
