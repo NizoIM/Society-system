@@ -1,4 +1,3 @@
-```javascript
 // ================= AUTH =================
 
 const token = localStorage.getItem("token");
@@ -12,13 +11,12 @@ if (!token || !email) {
 
 const BASE_URL = "https://society-kwgy.onrender.com/api/member";
 
-// ================= ENDPOINTS (MATCH CONTROLLER) =================
+// ================= ENDPOINTS (MATCH CONTROLLER EXACTLY) =================
 
-const PAYMENT_API = BASE_URL + "/payment/" + email;
-const PAYMENT_HISTORY_API = BASE_URL + "/payments/" + email;
-const SEND_QUERY_API = BASE_URL + "/query";
-const PAYMENT_API = BASE_URL + "/payment/" + email;
-const PAYMENT_HISTORY_API = BASE_URL + "/payments/" + email;
+const PROFILE_API = `${BASE_URL}/profile/${email}`;
+const PAYMENT_API = `${BASE_URL}/payment/${email}`;
+const PAYMENT_HISTORY_API = `${BASE_URL}/payments/${email}`;
+const QUERY_API = `${BASE_URL}/query`;
 
 // ================= HEADERS =================
 
@@ -44,8 +42,8 @@ function logout() {
 // ================= PROFILE =================
 
 async function loadProfile() {
-    try {
 
+    try {
         const res = await fetch(PROFILE_API, {
             method: "GET",
             headers: authHeaders(false)
@@ -81,7 +79,7 @@ async function sendQuery() {
 
     try {
 
-        const res = await fetch(SEND_QUERY_API, {
+        const res = await fetch(QUERY_API, {
             method: "POST",
             headers: authHeaders(),
             body: JSON.stringify({
@@ -93,7 +91,7 @@ async function sendQuery() {
 
         if (!res.ok) throw new Error("Query failed");
 
-        alert("Query sent");
+        alert("Query sent successfully");
 
         loadQueries();
 
@@ -108,7 +106,7 @@ async function loadQueries() {
 
     try {
 
-        const res = await fetch(QUERY_API, {
+        const res = await fetch(`${BASE_URL}/query/${email}`, {
             method: "GET",
             headers: authHeaders(false)
         });
@@ -120,6 +118,11 @@ async function loadQueries() {
         const table = document.querySelector("#myTable tbody");
 
         table.innerHTML = "";
+
+        if (!data.length) {
+            table.innerHTML = `<tr><td colspan="5">No queries found</td></tr>`;
+            return;
+        }
 
         data.forEach(q => {
             table.innerHTML += `
@@ -194,14 +197,19 @@ async function loadPaymentHistory() {
 
         table.innerHTML = "";
 
+        if (!data.length) {
+            table.innerHTML = `<tr><td colspan="5">No payments found</td></tr>`;
+            return;
+        }
+
         data.forEach(p => {
             table.innerHTML += `
                 <tr>
                     <td>${p.id}</td>
-                    <td>${p.paymentMonth}</td>
+                    <td>${p.paymentMonth || "-"}</td>
                     <td>R${p.amount}</td>
                     <td>${p.status}</td>
-                    <td>${p.paymentDate}</td>
+                    <td>${p.paymentDate || "-"}</td>
                 </tr>
             `;
         });
@@ -224,4 +232,3 @@ document.addEventListener("DOMContentLoaded", () => {
 window.sendQuery = sendQuery;
 window.uploadPayment = uploadPayment;
 window.logout = logout;
-```
