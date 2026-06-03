@@ -40,31 +40,75 @@ function logout() {
 }
 
 // ================= PROFILE =================
-
 async function loadProfile() {
 
     try {
-        const res = await fetch(PROFILE_API, {
-            method: "GET",
-            headers: authHeaders(false)
-        });
 
-        if (!res.ok) throw new Error("Profile failed");
+        const user =
+            await apiRequest(PROFILE_API);
 
-        const user = await res.json();
+        const profile =
+            document.getElementById("profile");
 
-        document.getElementById("profile").innerHTML = `
-            <h2>${user.firstName} ${user.lastName}</h2>
-            <p>Email: ${user.email}</p>
-            <p>Phone: ${user.phone}</p>
-            <p>Role: ${user.role}</p>
-        `;
+        if (!profile || !user) return;
 
-    } catch (err) {
-        console.error("Profile error", err);
+      profile.innerHTML = `
+      <div class="profile-card">
+
+          <div class="profile-avatar">
+              <img
+                  src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      `${user.firstName || ""} ${user.lastName || ""}`
+                  )}&background=0D8ABC&color=fff&size=180"
+                  alt="Member Avatar">
+          </div>
+
+          <h2>
+              ${escapeHtml(user.firstName || "")}
+              ${escapeHtml(user.lastName || "")}
+          </h2>
+
+          <p>
+              <strong>Email:</strong>
+              ${escapeHtml(user.email || "N/A")}
+          </p>
+
+          <p>
+              <strong>Phone:</strong>
+              ${escapeHtml(user.phone || "N/A")}
+          </p>
+
+          <p>
+              <strong>Role:</strong>
+              ${escapeHtml(user.role || "ADMIN")}
+          </p>
+
+          <p>
+              <strong>Status:</strong>
+
+              <span class="${
+                  user.enabled
+                      ? "active"
+                      : "inactive"
+              }">
+
+                  ${
+                      user.enabled
+                          ? "ACTIVE"
+                          : "DISABLED"
+                  }
+
+              </span>
+          </p>
+
+      </div>
+      `;
+
+    } catch (error) {
+
+        console.error(error);
     }
 }
-
 // ================= SEND QUERY =================
 
 async function sendQuery() {
