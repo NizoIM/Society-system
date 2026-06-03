@@ -38,77 +38,72 @@ function logout() {
     localStorage.clear();
     window.location.href = "/pages/login.html";
 }
+//====================Sideshow===============
+function showSection(sectionId) {
 
+    document
+        .querySelectorAll(".dashboard-section")
+        .forEach(section => {
+            section.style.display = "none";
+        });
+
+    const target =
+        document.getElementById(sectionId);
+
+    if (target) {
+        target.style.display = "block";
+    }
+}
+
+window.showSection = showSection;
 // ================= PROFILE =================
 async function loadProfile() {
 
     try {
 
-        const user =
-            await apiRequest(PROFILE_API);
+        const res = await fetch(PROFILE_API, {
+            method: "GET",
+            headers: authHeaders(false)
+        });
 
-        const profile =
-            document.getElementById("profile");
+        if (!res.ok) {
+            throw new Error("Profile failed");
+        }
 
-        if (!profile || !user) return;
+        const user = await res.json();
 
-      profile.innerHTML = `
-      <div class="profile-card">
+        const profile = document.getElementById("profile");
 
-          <div class="profile-avatar">
-              <img
-                  src="https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      `${user.firstName || ""} ${user.lastName || ""}`
-                  )}&background=0D8ABC&color=fff&size=180"
-                  alt="Member Avatar">
-          </div>
+        if (!profile) return;
 
-          <h2>
-              ${escapeHtml(user.firstName || "")}
-              ${escapeHtml(user.lastName || "")}
-          </h2>
+        profile.innerHTML = `
+            <div class="profile-card">
 
-          <p>
-              <strong>Email:</strong>
-              ${escapeHtml(user.email || "N/A")}
-          </p>
+                <div class="profile-avatar">
+                    <img
+                        src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            `${user.firstName || ""} ${user.lastName || ""}`
+                        )}&background=0D8ABC&color=fff&size=180"
+                        alt="Member Avatar">
+                </div>
 
-          <p>
-              <strong>Phone:</strong>
-              ${escapeHtml(user.phone || "N/A")}
-          </p>
+                <h2>
+                    ${user.firstName || ""}
+                    ${user.lastName || ""}
+                </h2>
 
-          <p>
-              <strong>Role:</strong>
-              ${escapeHtml(user.role || "ADMIN")}
-          </p>
+                <p><strong>Email:</strong> ${user.email || "N/A"}</p>
+                <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
+                <p><strong>Role:</strong> ${user.role || "MEMBER"}</p>
 
-          <p>
-              <strong>Status:</strong>
-
-              <span class="${
-                  user.enabled
-                      ? "active"
-                      : "inactive"
-              }">
-
-                  ${
-                      user.enabled
-                          ? "ACTIVE"
-                          : "DISABLED"
-                  }
-
-              </span>
-          </p>
-
-      </div>
-      `;
+            </div>
+        `;
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Profile Error:", error);
     }
 }
+
 // ================= SEND QUERY =================
 
 async function sendQuery() {
@@ -266,6 +261,9 @@ async function loadPaymentHistory() {
 // ================= INIT =================
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    showSection("profile-section");
+
     loadProfile();
     loadQueries();
     loadPaymentHistory();

@@ -74,64 +74,57 @@
 
     <main class="main-content">
 
-        <h1>
-            Member Dashboard
-        </h1>
+        <h1>Member Dashboard</h1>
 
-        <!-- ================= PROFILE ================= -->
+        <!-- PROFILE -->
 
-        <section class="card dashboard-section" id="profile-section" style="display:none;">
+        <section
+                class="card dashboard-section"
+                id="profile-section">
 
-            <h2>Profile</h2>
+            <h2>My Profile</h2>
 
-            <div id="profile">Loading...</div>
+            <div id="profile">
+                Loading profile...
+            </div>
 
         </section>
 
-        <!-- ================= PAYMENT ================= -->
+        <!-- PAYMENTS -->
 
         <section
-                class="card"
-                id="payment-section"
-        >
+                class="card dashboard-section"
+                id="payment-section">
 
-            <h2>
-                Upload Proof of Payment
-            </h2>
+            <h2>Upload Proof of Payment</h2>
+
             <input
                     type="number"
                     id="amount"
                     placeholder="Enter Amount"
                     step="0.01"
-                    min="1"
-                    required
-            />
+                    min="1">
+
             <div class="form-group">
 
                 <input
                         type="file"
                         id="proofFile"
-                        accept=".jpg,.jpeg,.png,.pdf"
-                >
+                        accept=".jpg,.jpeg,.png,.pdf">
 
             </div>
 
             <button
                     class="primary-btn"
-                    onclick="uploadPayment()"
-            >
+                    onclick="uploadPayment()">
+
                 Upload Proof
+
             </button>
 
-        </section>
+            <hr>
 
-        <!-- ================= PAYMENT HISTORY ================= -->
-
-        <section class="card">
-
-            <h2>
-                Payment History
-            </h2>
+            <h2>Payment History</h2>
 
             <div class="table-container">
 
@@ -140,14 +133,11 @@
                     <thead>
 
                     <tr>
-
                         <th>ID</th>
                         <th>Month</th>
                         <th>Amount</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>File</th>
-
                     </tr>
 
                     </thead>
@@ -155,11 +145,9 @@
                     <tbody>
 
                     <tr>
-
-                        <td colspan="6">
+                        <td colspan="5">
                             Loading payments...
                         </td>
-
                     </tr>
 
                     </tbody>
@@ -170,52 +158,43 @@
 
         </section>
 
-        <!-- ================= QUERY FORM ================= -->
+        <!-- QUERIES -->
 
         <section
-                class="card"
-                id="query-section"
-        >
+                class="card dashboard-section"
+                id="query-section">
 
-            <h2>
-                Send Query
-            </h2>
+            <h2>Send Query</h2>
 
             <div class="form-group">
 
                 <input
                         id="subject"
                         type="text"
-                        placeholder="Subject"
-                >
+                        placeholder="Subject">
 
             </div>
 
             <div class="form-group">
 
-                <textarea
-                        id="message"
-                        placeholder="Write your message..."
-                ></textarea>
+            <textarea
+                    id="message"
+                    placeholder="Write your message...">
+            </textarea>
 
             </div>
 
             <button
                     class="primary-btn"
-                    onclick="sendQuery()"
-            >
+                    onclick="sendQuery()">
+
                 Send Query
+
             </button>
 
-        </section>
+            <hr>
 
-        <!-- ================= QUERY TABLE ================= -->
-
-        <section class="card">
-
-            <h2>
-                My Queries
-            </h2>
+            <h2>My Queries</h2>
 
             <div class="table-container">
 
@@ -224,13 +203,11 @@
                     <thead>
 
                     <tr>
-
                         <th>ID</th>
                         <th>Subject</th>
                         <th>Message</th>
                         <th>Status</th>
                         <th>Response</th>
-
                     </tr>
 
                     </thead>
@@ -238,11 +215,9 @@
                     <tbody>
 
                     <tr>
-
                         <td colspan="5">
                             Loading queries...
                         </td>
-
                     </tr>
 
                     </tbody>
@@ -254,7 +229,6 @@
         </section>
 
     </main>
-
 </div>
 
 </body>
