@@ -16,7 +16,7 @@ const BASE_URL = "https://society-kwgy.onrender.com/api/member";
 
 const PAYMENT_API = BASE_URL + "/payment/" + email;
 const PAYMENT_HISTORY_API = BASE_URL + "/payments/" + email;
-const SEND_QUERY_API = `${BASE_URL}/query`;
+const SEND_QUERY_API = BASE_URL + "/query";
 const PAYMENT_API = BASE_URL + "/payment/" + email;
 const PAYMENT_HISTORY_API = BASE_URL + "/payments/" + email;
 
