@@ -3,133 +3,127 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nomhala Society</title>
 
-    ```
-    <link rel="stylesheet" href="css/Styling.css">
-    ```
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Nomhala Society Login</title>
+
+    <link rel="stylesheet" href="../css/Styling.css">
+
+    <script defer src="../js/login.js"></script>
+
 
 </head>
 
 <body>
 
-<header class="hero">
+<section class="login-page">
 
-    ```
-    <h1>Nomhala Society</h1>
 
-    <p>
-        Community Development • Member Support • Financial Transparency
-    </p>
+    <div class="login-container">
 
-    <button class="login-btn" onclick="openLoginModal()">
-        Member Login
-    </button>
-    ```
+        <!-- LEFT SIDE -->
 
-</header>
+        <div class="login-image">
 
-<section class="info-grid">
+            <img
+                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                    alt="Nomhala Society"
+            >
 
-    ```
-    <div class="info-card">
-        <h2>Community Support</h2>
-        <p>
-            Supporting members through community programs,
-            assistance and development initiatives.
-        </p>
+        </div>
+
+        <!-- RIGHT SIDE -->
+
+        <div class="login-form-container">
+
+            <div class="login-header">
+
+                <h1>Nomhala Society</h1>
+
+
+            </div>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter your email"
+                            required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            required
+                    >
+
+                </div>
+
+                <div class="form-options">
+
+                    <label>
+
+                        <input type="checkbox">
+
+                        Remember Me
+
+                    </label>
+
+                    <a href="forgot-password.html">
+                        Forgot Password?
+                    </a>
+
+                </div>
+
+                <button
+                        type="submit"
+                        class="login-btn"
+                >
+                    Login
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
 
-    <div class="info-card">
-        <h2>Payment Management</h2>
-        <p>
-            Members can securely upload proof of payment,
-            track payment history and monitor status.
-        </p>
-    </div>
-
-    <div class="info-card">
-        <h2>Member Queries</h2>
-        <p>
-            Submit queries and receive responses directly
-            from society administrators.
-        </p>
-    </div>
-    ```
 
 </section>
 
-<!-- LOGIN MODAL -->
+<footer class="login-footer">
 
-<div id="loginModal" class="modal">
 
-    ```
-    <div class="modal-content">
+    <p>
+        © 2026 Nomhala Society. All Rights Reserved.
+    </p>
 
-    <span class="close" onclick="closeLoginModal()">
-        &times;
-    </span>
 
-        <h2>Member Login</h2>
-
-        <form id="loginForm">
-
-            <input
-                    type="email"
-                    id="email"
-                    placeholder="Email"
-                    required
-            >
-
-            <input
-                    type="password"
-                    id="password"
-                    placeholder="Password"
-                    required
-            >
-
-            <button type="submit">
-                Login
-            </button>
-
-        </form>
-
-        <p>
-            <a href="pages/forgot-password.html">
-                Forgot Password?
-            </a>
-        </p>
-
-    </div>
-    ```
-
-</div>
-
-<script>
-
-    function openLoginModal() {
-        document.getElementById("loginModal").style.display = "flex";
-    }
-
-    function closeLoginModal() {
-        document.getElementById("loginModal").style.display = "none";
-    }
-
-    window.onclick = function(event) {
-
-        const modal =
-            document.getElementById("loginModal");
-
-        if (event.target === modal) {
-            closeLoginModal();
-        }
-    };
-
-</script>
-
-<script defer src="js/login.js"></script>
+</footer>
 
 </body>
+
 </html>
