@@ -2,26 +2,22 @@
 // CONFIG
 // =========================================
 
-const BASE_URL = "https://society-kwgy.onrender.com";
-
-const ADMIN_API = `${BASE_URL}/api/admin`;
-const MEMBER_API = `${BASE_URL}/api/member`;
-
-const USERS_API = `${ADMIN_API}/users`;
-const PAYMENTS_API = `${ADMIN_API}/payments`;
-const STATS_API = `${ADMIN_API}/stats`;
-const AI_SUMMARY_API = `${ADMIN_API}/ai-summary`;
-const PROFILE_API = `${ADMIN_API}/profile`;
-const QUERIES_API = `${ADMIN_API}/queries`;
-
-const PAYMENT_HISTORY_API = `${MEMBER_API}/payments/history`;
-const PAYMENT_UPLOAD_API = `${MEMBER_API}/payments/upload`;
-
 const token = localStorage.getItem("token");
 
 if (!token) {
     window.location.href = "/pages/login.html";
 }
+
+// ================= API BASE =================
+
+const API_BASE = "https://society-kwgy.onrender.com/api/admin";
+
+// ================= ENDPOINTS =================
+
+const QUERY_API = `${API_BASE}/queries`;
+const PROFILE_API = `${API_BASE}/profile/{email}`;
+const PAYMENT_API = `${API_BASE}/payments/upload`;
+const PAYMENT_HISTORY_API = `${API_BASE}/payments/history`;
 
 //========AUTH HEADERS====================
 
@@ -38,15 +34,11 @@ function authHeaders(json = true) {
     return headers;
 }
 
-//===============LOGOUT ONCE ============================
+// ================= LOGOUT =================
 
 function logout() {
     localStorage.clear();
     window.location.href = "/pages/login.html";
-}
-
-function logout() {
-    redirectToLogin();
 }
 
 // =========================================
@@ -68,7 +60,6 @@ function showSection(sectionId) {
         target.style.display = "block";
     }
 }
-
 
 // ================= 401 HANDLER =================
 
