@@ -3,29 +3,15 @@
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-    >
+    <title>Admin Dashboard</title>
 
-    <title>
-        Admin Dashboard
-    </title>
+    <link rel="stylesheet" href="/css/Styling.css">
 
-    <link
-            rel="stylesheet"
-            href="/css/Styling.css"
-    >
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- ONLY ONE JS -->
-    <script
-            defer
-            src="/js/admin.js"
-    ></script>
+    <script defer src="/js/admin.js"></script>
 
 </head>
 
@@ -33,485 +19,188 @@
 
 <div class="dashboard-container">
 
-    <!-- ========================================= -->
-    <!-- SIDEBAR -->
-    <!-- ========================================= -->
-
+    <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
 
-        <h2 class="logo">
-            ADMIN PANEL
-        </h2>
+        <h2 class="logo">ADMIN PANEL</h2>
 
         <nav class="nav-links">
 
-            <button onclick="showSection('dashboard-section')">
-                Dashboard
-            </button>
-
-            <button onclick="showSection('profile-section')">
-                My Profile
-            </button>
-
-            <button onclick="showSection('members-section')">
-                Members
-            </button>
-
-            <button onclick="showSection('add-member-section')">
-                Add Member
-            </button>
-
-            <button onclick="showSection('payments-section')">
-                All Payments
-            </button>
-
-            <button onclick="showSection('queries-section')">
-                Queries
-            </button>
+            <button onclick="showSection('dashboard-section')">Dashboard</button>
+            <button onclick="showSection('profile-section')">Profile</button>
+            <button onclick="showSection('members-section')">Members</button>
+            <button onclick="showSection('add-member-section')">Add Member</button>
+            <button onclick="showSection('payments-section')">Payments</button>
+            <button onclick="showSection('queries-section')">Queries</button>
 
         </nav>
 
-        <button
-                class="logout-btn"
-                onclick="logout()"
-        >
-            Logout
-        </button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
 
     </aside>
 
-    <!-- ========================================= -->
-    <!-- MAIN CONTENT -->
-    <!-- ========================================= -->
-
+    <!-- ================= MAIN ================= -->
     <main class="main-content">
 
-        <h1>
-            Admin Dashboard
-        </h1>
+        <h1>Admin Dashboard</h1>
 
-        <!-- ========================================= -->
-        <!-- DASHBOARD -->
-        <!-- ========================================= -->
+        <!-- ================= DASHBOARD ================= -->
+        <section class="card dashboard-section" id="dashboard-section">
 
-        <section
-                class="card dashboard-section"
-                id="dashboard-section"
-        >
+            <h2>Overview</h2>
 
-            <h2>
-                Dashboard Overview
-            </h2>
+            <div id="alerts">Loading stats...</div>
 
-            <div id="alerts">
-
-                <p>
-                    Loading dashboard stats...
-                </p>
-
-            </div>
-
-            <!-- CHART -->
-
-            <div class="card chart-container">
-
-                <h3>
-                    Payment Trends
-                </h3>
-
+            <div class="card">
                 <canvas id="paymentChart"></canvas>
-
             </div>
 
-            <!-- AI -->
+            <div class="card" id="aiSummary">Loading AI summary...</div>
 
-            <div class="card ai-summary-card">
-
-                <h2>
-                    Smart AI Dashboard Summary
-                </h2>
-
-                <div id="aiSummary">
-
-                    <p>
-                        Loading insights...
-                    </p>
-
-                </div>
-
-            </div>
-
-            <!-- ACTIONS -->
-
-            <div class="dashboard-actions">
-
-                <button onclick="loadStats()">
-                    Refresh Stats
-                </button>
-
-                <button onclick="downloadStats()">
-                    Download PDF
-                </button>
-
-            </div>
+            <button onclick="loadStats()">Refresh</button>
+            <button onclick="downloadStats()">Download PDF</button>
 
         </section>
 
-        <!-- ========================================= -->
-        <!-- PROFILE -->
-        <!-- ========================================= -->
+        <!-- ================= PROFILE ================= -->
+        <section class="card dashboard-section" id="profile-section" style="display:none;">
 
-        <section
-                class="card dashboard-section"
-                id="profile-section"
-                style="display:none;"
-        >
+            <h2>Profile</h2>
 
-            <h2>
-                My Profile
-            </h2>
+            <div id="profile">Loading...</div>
 
-            <div id="profile">
+            <hr>
 
-                <p>
-                    Loading profile...
-                </p>
-
-            </div>
-
-            <!-- ========================================= -->
             <!-- ADMIN PAYMENT UPLOAD -->
-            <!-- ========================================= -->
+            <h3>Upload Payment</h3>
 
-            <section class="card">
+            <input type="number" id="amount" placeholder="Amount">
+            <input type="file" id="proofFile">
 
-                <h2>
-                    Upload Admin Payment
-                </h2>
+            <button onclick="uploadPayment()">Upload</button>
 
-                <input
-                        type="number"
-                        id="amount"
-                        placeholder="Enter Amount"
-                        step="0.01"
-                        min="1"
-                        required
-                >
+            <hr>
 
-                <div class="form-group">
+            <!-- PAYMENT HISTORY (ADMIN ONLY) -->
+            <h3>My Payment History</h3>
 
-                    <input
-                            type="file"
-                            id="proofFile"
-                            accept=".jpg,.jpeg,.png,.pdf"
-                    >
-
-                </div>
-
-                <button
-                        class="primary-btn"
-                        onclick="uploadPayment()"
-                >
-                    Upload Proof
-                </button>
-
-            </section>
-
-            <!-- ========================================= -->
-            <!-- ADMIN PAYMENT HISTORY ONLY -->
-            <!-- ========================================= -->
-
-            <section class="card">
-
-                <h2>
-                    My Payment History
-                </h2>
-
-                <div class="table-container">
-
-                    <!-- IMPORTANT -->
-                    <!-- ADMIN HISTORY TABLE -->
-
-                    <table id="paymentHistoryTable">
-
-                        <thead>
-
-                        <tr>
-
-                            <th>ID</th>
-                            <th>Month</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>File</th>
-
-                        </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                        <tr>
-
-                            <td colspan="6">
-                                Loading payments...
-                            </td>
-
-                        </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
+            <table id="paymentHistoryTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Month</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Proof</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+            </table>
 
         </section>
 
-        <!-- ========================================= -->
-        <!-- MEMBERS -->
-        <!-- ========================================= -->
+        <!-- ================= MEMBERS ================= -->
+        <section class="card dashboard-section" id="members-section" style="display:none;">
 
-        <section
-                class="card dashboard-section"
-                id="members-section"
-                style="display:none;"
-        >
+            <h2>Members</h2>
 
-            <h2>
-                All Members
-            </h2>
+            <input id="search" onkeyup="searchUsers()" placeholder="Search users...">
+            <button onclick="loadUsers()">Refresh</button>
 
-            <div class="search-box">
-
-                <input
-                        id="search"
-                        placeholder="Search users..."
-                        onkeyup="searchUsers()"
-                >
-
-                <button onclick="loadUsers()">
-                    Refresh
-                </button>
-
-            </div>
-
-            <div class="table-container">
-
-                <table id="userTable">
-
-                    <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    <tr>
-
-                        <td colspan="7">
-                            Loading users...
-                        </td>
-
-                    </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            <table id="userTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="7">Loading...</td></tr>
+                </tbody>
+            </table>
 
         </section>
 
-        <!-- ========================================= -->
-        <!-- ADD MEMBER -->
-        <!-- ========================================= -->
+        <!-- ================= ADD MEMBER ================= -->
+        <section class="card dashboard-section" id="add-member-section" style="display:none;">
 
-        <section
-                class="card dashboard-section"
-                id="add-member-section"
-                style="display:none;"
-        >
+            <h2>Add Member</h2>
 
-            <h2>
-                Add Member
-            </h2>
+            <input id="firstName" placeholder="First Name">
+            <input id="lastName" placeholder="Last Name">
+            <input id="email" placeholder="Email">
+            <input id="phone" placeholder="Phone">
+            <input id="password" type="password" placeholder="Password">
 
-            <div class="form-group">
+            <select id="role">
+                <option value="MEMBER">MEMBER</option>
+                <option value="STAFF">STAFF</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
 
-                <input
-                        id="firstName"
-                        placeholder="First Name"
-                >
-
-                <input
-                        id="lastName"
-                        placeholder="Last Name"
-                >
-
-                <input
-                        id="email"
-                        placeholder="Email"
-                >
-
-                <input
-                        id="phone"
-                        placeholder="Phone"
-                >
-
-                <input
-                        id="password"
-                        type="password"
-                        placeholder="Password"
-                >
-
-                <select id="role">
-
-                    <option value="MEMBER">
-                        MEMBER
-                    </option>
-
-                    <option value="STAFF">
-                        STAFF
-                    </option>
-
-                    <option value="ADMIN">
-                        ADMIN
-                    </option>
-
-                </select>
-
-                <button onclick="addUser()">
-                    Add User
-                </button>
-
-            </div>
+            <button onclick="addUser()">Add User</button>
 
         </section>
 
-        <!-- ========================================= -->
-        <!-- ALL PAYMENTS FROM EVERYONE -->
-        <!-- ========================================= -->
+        <!-- ================= PAYMENTS ================= -->
+        <section class="card dashboard-section" id="payments-section" style="display:none;">
 
-        <section
-                class="card dashboard-section"
-                id="payments-section"
-                style="display:none;"
-        >
+            <h2>All Payments</h2>
 
-            <h2>
-                All Member Payments
-            </h2>
-
-            <div class="table-container">
-
-                <!-- IMPORTANT -->
-                <!-- THIS TABLE SHOWS EVERYONE'S PAYMENTS -->
-
-                <table id="adminPaymentTable">
-
-                    <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-                        <th>Member</th>
-                        <th>Amount</th>
-                        <th>Month</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                        <th>Ahead/Behind</th>
-                        <th>Proof</th>
-                        <th>Actions</th>
-
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    <tr>
-
-                        <td colspan="9">
-                            Loading payments...
-                        </td>
-
-                    </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            <table id="adminPaymentTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Member</th>
+                    <th>Amount</th>
+                    <th>Month</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Info</th>
+                    <th>Proof</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="9">Loading...</td></tr>
+                </tbody>
+            </table>
 
         </section>
 
-        <!-- ========================================= -->
-        <!-- QUERIES -->
-        <!-- ========================================= -->
+        <!-- ================= QUERIES ================= -->
+        <section class="card dashboard-section" id="queries-section" style="display:none;">
 
-        <section
-                class="card dashboard-section"
-                id="queries-section"
-                style="display:none;"
-        >
+            <h2>Queries</h2>
 
-            <h2>
-                Member Queries
-            </h2>
-
-            <div class="table-container">
-
-                <table id="queryTable">
-
-                    <thead>
-
-                    <tr>
-
-                        <th>ID</th>
-                        <th>Email</th>
-                        <th>Subject</th>
-                        <th>Message</th>
-                        <th>Status</th>
-                        <th>Response</th>
-                        <th>Action</th>
-
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    <tr>
-
-                        <td colspan="7">
-                            Loading queries...
-                        </td>
-
-                    </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            <table id="queryTable">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Response</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr><td colspan="7">Loading...</td></tr>
+                </tbody>
+            </table>
 
         </section>
 
     </main>
-
 </div>
 
 </body>

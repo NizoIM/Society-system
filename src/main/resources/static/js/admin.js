@@ -2,8 +2,10 @@
 // CONFIG (FIXED FOR RENDER)
 // =========================================
 
+// ================= BASE =================
 const BASE_URL = "https://society-kwgy.onrender.com";
 
+// ================= ADMIN =================
 const ADMIN_API = `${BASE_URL}/api/admin`;
 
 const USERS_API = `${ADMIN_API}/users`;
@@ -11,14 +13,18 @@ const PAYMENTS_API = `${ADMIN_API}/payments`;
 const STATS_API = `${ADMIN_API}/stats`;
 const AI_SUMMARY_API = `${ADMIN_API}/ai-summary`;
 
+const PROFILE_API = `${ADMIN_API}/profile`;
+const PAYMENT_EXPORT_API = `${ADMIN_API}/payments/export`;
+
+// ================= MEMBER =================
 const MEMBER_API = `${BASE_URL}/api/member`;
-const STAFF_API = `${BASE_URL}/api/staff`;
 
-const QUERIES_API = `${BASE_URL}/api/member/queries`; // FIXED (NOT admin in most systems)
-const PROFILE_API = `${BASE_URL}/api/admin/profile`;
+const QUERY_API = `${MEMBER_API}/query`; // POST
+const QUERY_GET_API = `${MEMBER_API}/query/${localStorage.getItem("email")}`;
 
-const PAYMENT_HISTORY_API = `${BASE_URL}/api/member/payments/history`;
-const PAYMENT_UPLOAD_API = `${BASE_URL}/api/member/payments/upload`;
+const PAYMENT_HISTORY_API = `${MEMBER_API}/payments/${localStorage.getItem("email")}`;
+
+const PAYMENT_UPLOAD_API = `${ADMIN_API}/payments/upload`;
 
 const token = localStorage.getItem("token");
 
@@ -759,7 +765,35 @@ function renderPayments(payments) {
         `;
     });
 }
+async function uploadPayment() {
 
+    const file = document.getElementById("proofFile").files[0];
+    const amount = document.getElementById("amount").value;
+
+    if (!file || !amount) {
+        alert("Select file + amount");
+        return;
+    }
+
+    const form = new FormData();
+    form.append("file", file);
+    form.append("amount", amount);
+
+    const res = await fetch(PAYMENT_UPLOAD_API, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        body: form
+    });
+
+    await handleResponse(res);
+
+    alert("Payment uploaded");
+
+    loadPayments();
+    loadStats();
+}
 
 // =========================================
 // PAYMENT HISTORY
@@ -1082,55 +1116,28 @@ async function downloadStats() {
 // ================= LOAD QUERIES =================
 
 async function loadQueries() {
+    const res = await fetch(QUERY_GET_API, {
+        headers: authHeaders(false)
+    });
 
-    try {
+    const data = await handleResponse(res);
 
-        const response = await fetch(QUERIES_API, {
-            method: "GET",
-            headers: authHeaders(false)
-        });
+    const table = document.querySelector("#queryTable tbody");
+    if (!table) return;
 
-        const data = await handleResponse(response);
+    table.innerHTML = "";
 
-        const table = document.querySelector("#queryTable tbody");
-
-        if (!table) return;
-
-        table.innerHTML = "";
-
-        if (!data || data.length === 0) {
-            table.innerHTML = `
-                <tr>
-                    <td colspan="6">No queries found</td>
-                </tr>
-            `;
-            return;
-        }
-
-        data.forEach(q => {
-
-            table.innerHTML += `
-                <tr>
-                    <td>${q.id}</td>
-                    <td>${escapeHtml(q.email || "-")}</td>
-                    <td>${escapeHtml(q.subject || "")}</td>
-                    <td>${escapeHtml(q.message || "")}</td>
-                    <td>${escapeHtml(q.status || "PENDING")}</td>
-
-                    <td>
-                        <button class="edit-btn"
-                            onclick="respondToQuery(${q.id})">
-                            Respond
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-    }
+    (data || []).forEach(q => {
+        table.innerHTML += `
+            <tr>
+                <td>${q.id}</td>
+                <td>${q.subject}</td>
+                <td>${q.message}</td>
+                <td>${q.status}</td>
+                <td>${q.response || "-"}</td>
+            </tr>
+        `;
+    });
 }
 // ================= RESPOND =================
 
