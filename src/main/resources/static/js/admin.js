@@ -1191,42 +1191,6 @@ function searchQueries() {
         row.style.display = match ? "" : "none";
     });
 }
-// ================= REAL-TIME AUTO REFRESH =================
-
-function startAutoRefresh() {
-
-    setInterval(() => {
-
-        try {
-            loadPayments();
-            loadQueries();
-            loadStats();
-            loadAiSummary();
-        } catch (e) {
-            console.error("Auto refresh error", e);
-        }
-
-    }, 5000);
-}
-function showNotification(message) {
-
-    const div = document.createElement("div");
-
-    div.innerText = message;
-
-    div.style.position = "fixed";
-    div.style.top = "20px";
-    div.style.right = "20px";
-    div.style.background = "#0d8abc";
-    div.style.color = "white";
-    div.style.padding = "12px 20px";
-    div.style.borderRadius = "8px";
-    div.style.zIndex = "9999";
-
-    document.body.appendChild(div);
-
-    setTimeout(() => div.remove(), 3000);
-}
 
 // =========================================
 // GLOBALS
