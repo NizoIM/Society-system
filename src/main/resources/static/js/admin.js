@@ -192,7 +192,42 @@ function renderStatus(enabled) {
             </span>
           `;
 }
+function renderQueries(data) {
 
+    const table = document.querySelector("#queryTable tbody");
+
+    if (!table) return;
+
+    table.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="6">No queries found</td>
+            </tr>
+        `;
+        return;
+    }
+
+    data.forEach(q => {
+        table.innerHTML += `
+            <tr>
+                <td>${q.id}</td>
+                <td>${q.email}</td>
+                <td>${q.subject}</td>
+                <td>${q.message}</td>
+                <td>${q.status}</td>
+                <td>${q.response || "-"}</td>
+
+                <td>
+                    <button onclick="respondToQuery(${q.id})">
+                        Respond
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
 // =========================================
 // SECTION NAVIGATION
 // =========================================
@@ -765,36 +800,46 @@ function renderPayments(payments) {
         `;
     });
 }
-async function uploadPayment() {
+// =========================================
+// PAYMENTS
+// =========================================
 
-    const file = document.getElementById("proofFile").files[0];
-    const amount = document.getElementById("amount").value;
+async function loadPayments() {
 
-    if (!file || !amount) {
-        alert("Select file + amount");
-        return;
+    try {
+
+        const payments = await apiRequest(PAYMENTS_API);
+
+        const table = document.querySelector("#adminPaymentTable tbody");
+
+        if (!table) return;
+
+        table.innerHTML = "";
+
+        payments.forEach(p => {
+
+            table.innerHTML += `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.memberEmail || "Unknown"}</td>
+                    <td>R${p.amount}</td>
+                    <td>${p.paymentMonth || "-"}</td>
+                    <td>${p.paymentDate || "-"}</td>
+                    <td>${p.status || "PENDING"}</td>
+
+                    <td>
+                        <a href="${BASE_URL}/api/files/payment/${p.id}" target="_blank">
+                            View
+                        </a>
+                    </td>
+                </tr>
+            `;
+        });
+
+    } catch (err) {
+        console.error(err);
     }
-
-    const form = new FormData();
-    form.append("file", file);
-    form.append("amount", amount);
-
-    const res = await fetch(PAYMENT_UPLOAD_API, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-        },
-        body: form
-    });
-
-    await handleResponse(res);
-
-    alert("Payment uploaded");
-
-    loadPayments();
-    loadStats();
 }
-
 // =========================================
 // PAYMENT HISTORY
 // =========================================
@@ -867,6 +912,7 @@ async function loadPaymentHistory() {
         console.error(error);
     }
 }
+
 // =========================================
 // USERS
 // =========================================
@@ -1056,116 +1102,82 @@ async function downloadStats() {
     }
 }
 
-// ================= LOAD QUERIES =================
+// =========================================
+// QUERIES (FIXED - SHOW ALL + RESPOND)
+// =========================================
 
 async function loadQueries() {
 
     try {
 
-        const res = await fetch(QUERY_GET_API, {
-            method: "GET",
-            headers: authHeaders(false)
-        });
+        const queries = await apiRequest(QUERIES_API);
 
-        const data = await handleResponse(res);
-
-        const table =
-            document.querySelector("#queryTable tbody");
+        const table = document.querySelector("#queryTable tbody");
 
         if (!table) return;
 
         table.innerHTML = "";
 
-        if (!data || data.length === 0) {
-
+        if (!queries.length) {
             table.innerHTML = `
-                <tr>
-                    <td colspan="7">
-                        No queries found
-                    </td>
-                </tr>
+                <tr><td colspan="6">No queries found</td></tr>
             `;
-
             return;
         }
 
-        data.forEach(q => {
-
+        queries.forEach(q => {
             table.innerHTML += `
                 <tr>
-
                     <td>${q.id}</td>
-
-                    <td>${escapeHtml(q.email || "-")}</td>
-
-                    <td>${escapeHtml(q.subject || "")}</td>
-
-                    <td>${escapeHtml(q.message || "")}</td>
-
-                    <td>${escapeHtml(q.status || "PENDING")}</td>
-
-                    <td>${escapeHtml(q.response || "-")}</td>
+                    <td>${q.email}</td>
+                    <td>${q.subject}</td>
+                    <td>${q.message}</td>
+                    <td>${q.status}</td>
+                    <td>${q.response || "-"}</td>
 
                     <td>
-
-                        <button
-                            class="edit-btn"
-                            onclick="respondToQuery(${q.id})">
-
+                        <button onclick="respondToQuery(${q.id})">
                             Respond
-
                         </button>
-
                     </td>
-
                 </tr>
             `;
         });
 
-    } catch (error) {
-
-        console.error(error);
-        alert(error.message);
+    } catch (err) {
+        console.error(err);
     }
 }
-// ================= RESPOND =================
+
+// =========================================
+// RESPOND QUERY
+// =========================================
 
 async function respondToQuery(id) {
 
-    const responseMessage =
-        prompt("Enter response");
+    const message = prompt("Enter response");
 
-    if (!responseMessage) return;
+    if (!message) return;
 
     try {
 
-        const response = await fetch(
-            `${QUERY_GET_API}/${id}`,
-            {
-                method: "PUT",
+        await apiRequest(`${QUERIES_API}/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                status: "RESOLVED",
+                response: message
+            })
+        });
 
-                headers: authHeaders(),
-
-                body: JSON.stringify({
-                    status: "RESOLVED",
-                    response: responseMessage
-                })
-            }
-        );
-
-        await handleResponse(response);
-
-        alert("Response saved");
+        alert("Response sent");
 
         loadQueries();
 
-    } catch (error) {
-
-        console.error(error);
-
-        alert(error.message);
+    } catch (err) {
+        console.error(err);
     }
 }
+
 // ================= SEARCH =================
 
 function searchQueries() {
@@ -1179,7 +1191,66 @@ function searchQueries() {
         row.style.display = match ? "" : "none";
     });
 }
+// ================= REAL-TIME AUTO REFRESH =================
 
+function startAutoRefresh() {
+
+    setInterval(() => {
+
+        try {
+            loadPayments();
+            loadQueries();
+            loadStats();
+            loadAiSummary();
+        } catch (e) {
+            console.error("Auto refresh error", e);
+        }
+
+    }, 5000);
+}
+function showNotification(message) {
+
+    const div = document.createElement("div");
+
+    div.innerText = message;
+
+    div.style.position = "fixed";
+    div.style.top = "20px";
+    div.style.right = "20px";
+    div.style.background = "#0d8abc";
+    div.style.color = "white";
+    div.style.padding = "12px 20px";
+    div.style.borderRadius = "8px";
+    div.style.zIndex = "9999";
+
+    document.body.appendChild(div);
+
+    setTimeout(() => div.remove(), 3000);
+}
+//============================================
+//=========LIVE QUERY NOTIFICATION=============
+//=============================================
+let lastQueryCount = 0;
+
+async function checkNewQueries() {
+
+    const queries = await apiRequest(QUERIES_API);
+
+    if (!queries) return;
+
+    if (lastQueryCount && queries.length > lastQueryCount) {
+        showNotification("🔥 New member query received!");
+    }
+
+    lastQueryCount = queries.length;
+}
+
+setInterval(() => {
+    loadPayments();
+    loadQueries();
+    loadStats();
+    checkNewQueries(); // 🔔 LIVE ALERTS
+}, 5000);
 // =========================================
 // GLOBALS
 // =========================================
@@ -1215,5 +1286,6 @@ document.addEventListener(
         loadPaymentHistory();
         loadAiSummary();
         loadPaymentChart();
+        startAutoRefresh();
     }
 );

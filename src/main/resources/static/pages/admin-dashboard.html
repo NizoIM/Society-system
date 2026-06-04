@@ -15,7 +15,7 @@
 
 </head>
 
-<body>
+<body onload="showSection('dashboard-section')">
 
 <div class="dashboard-container">
 
@@ -69,9 +69,6 @@
 
             <div id="profile">Loading...</div>
 
-
-
-            <!-- ADMIN PAYMENT UPLOAD -->
             <h3>Upload Payment</h3>
 
             <input type="number" id="amount" placeholder="Amount">
@@ -79,9 +76,6 @@
 
             <button onclick="uploadPayment()">Upload</button>
 
-
-
-            <!-- PAYMENT HISTORY (ADMIN ONLY) -->
             <h3>My Payment History</h3>
 
             <table id="paymentHistoryTable">
@@ -164,13 +158,11 @@
                     <th>Month</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th>Info</th>
                     <th>Proof</th>
-                    <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr><td colspan="9">Loading...</td></tr>
+                <tr><td colspan="7">Loading...</td></tr>
                 </tbody>
             </table>
 

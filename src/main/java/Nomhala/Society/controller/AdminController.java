@@ -7,6 +7,7 @@ import Nomhala.Society.dto.QueryDTO;
 import Nomhala.Society.entity.*;
 import Nomhala.Society.repository.*;
 
+import Nomhala.Society.service.EmailService;
 import Nomhala.Society.service.PaymentService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,8 @@ public class AdminController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
+    @Autowired
+    private EmailService emailService;
     // =========================================
     // USERS
     // =========================================
@@ -218,8 +220,14 @@ public class AdminController {
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
 
         payment.setStatus(PaymentStatus.APPROVED);
-
         paymentRepo.save(payment);
+
+// SEND EMAIL
+        emailService.send(
+                payment.getMember().getEmail(),
+                "Payment Approved",
+                "Your payment for " + payment.getPaymentMonth() + " has been approved."
+        );
 
         return ResponseEntity.ok(
                 new ApiResponse("Payment approved successfully")
@@ -239,6 +247,12 @@ public class AdminController {
         payment.setStatus(PaymentStatus.REJECTED);
 
         paymentRepo.save(payment);
+
+        emailService.send(
+                payment.getMember().getEmail(),
+                "Payment Rejected",
+                "Your payment was rejected. Please contact admin."
+        );
 
         return ResponseEntity.ok(
                 new ApiResponse("Payment rejected successfully")
