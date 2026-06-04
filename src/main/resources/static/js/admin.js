@@ -1051,6 +1051,36 @@ async function rejectPayment(id) {
         console.error(error);
     }
 }
+// =========================================
+// UPLOAD PAYMENT
+// =========================================
+
+async function uploadPayment() {
+    const file = document.getElementById("proofFile").files[0];
+    const amount = document.getElementById("amount").value;
+
+    if (!file || !amount) {
+        alert("Select file + amount");
+        return;
+    }
+
+    const form = new FormData();
+    form.append("file", file);
+    form.append("amount", amount);
+
+    const res = await fetch(PAYMENT_UPLOAD_API, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        },
+        body: form
+    });
+
+    await handleResponse(res);
+
+    alert("Uploaded");
+    loadPaymentHistory();
+}
 
 // =========================================
 // DOWNLOAD PDF
