@@ -169,20 +169,44 @@ public class AdminController {
     public List<PaymentAdminDTO> getPayments() {
 
         return paymentRepo.findAll().stream().map(p -> {
-            PaymentAdminDTO dto = new PaymentAdminDTO();
+
+            PaymentAdminDTO dto =
+                    new PaymentAdminDTO();
 
             dto.setId(p.getId());
-            dto.setMemberEmail(p.getMember().getEmail());
+
+            dto.setMemberEmail(
+
+                    p.getMember() != null
+
+                            ? p.getMember().getEmail()
+
+                            : "Unknown"
+            );
+
             dto.setAmount(p.getAmount());
+
             dto.setPaymentDate(p.getPaymentDate());
+
             dto.setPaymentMonth(p.getPaymentMonth());
-            dto.setStatus(p.getStatus().name());
-            dto.setOriginalFileName(p.getOriginalFileName());
+
+            dto.setStatus(
+
+                    p.getStatus() != null
+
+                            ? p.getStatus().name()
+
+                            : "PENDING"
+            );
+
+            dto.setOriginalFileName(
+                    p.getOriginalFileName()
+            );
 
             return dto;
+
         }).toList();
     }
-
     // =========================================
     // APPROVE PAYMENT
     // =========================================

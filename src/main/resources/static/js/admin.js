@@ -955,63 +955,6 @@ function renderUsers(users) {
         `;
     });
 }
-// =========================================
-// PAYMENT UPLOAD
-// =========================================
-
-async function uploadPayment() {
-
-    const amount =
-        document.getElementById("amount")?.value;
-
-    const file =
-        document.getElementById("proofFile")?.files[0];
-
-    if (!amount || !file) {
-
-        alert("Select file and amount");
-
-        return;
-    }
-
-    const formData =
-        new FormData();
-
-    formData.append("amount", amount);
-    formData.append("file", file);
-
-    try {
-
-        const response =
-            await fetch(
-                PAYMENT_UPLOAD_API,
-                {
-                    method: "POST",
-
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    },
-
-                    body: formData
-                }
-            );
-
-        await handleResponse(response);
-
-        alert("Payment uploaded");
-
-        loadPaymentHistory();
-        loadPayments();
-        loadStats();
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(error.message);
-    }
-}
-
 
 // =========================================
 // APPROVE / REJECT
@@ -1116,60 +1059,113 @@ async function downloadStats() {
 // ================= LOAD QUERIES =================
 
 async function loadQueries() {
-    const res = await fetch(QUERY_GET_API, {
-        headers: authHeaders(false)
-    });
 
-    const data = await handleResponse(res);
+    try {
 
-    const table = document.querySelector("#queryTable tbody");
-    if (!table) return;
+        const res = await fetch(QUERY_GET_API, {
+            method: "GET",
+            headers: authHeaders(false)
+        });
 
-    table.innerHTML = "";
+        const data = await handleResponse(res);
 
-    (data || []).forEach(q => {
-        table.innerHTML += `
-            <tr>
-                <td>${q.id}</td>
-                <td>${q.subject}</td>
-                <td>${q.message}</td>
-                <td>${q.status}</td>
-                <td>${q.response || "-"}</td>
-            </tr>
-        `;
-    });
+        const table =
+            document.querySelector("#queryTable tbody");
+
+        if (!table) return;
+
+        table.innerHTML = "";
+
+        if (!data || data.length === 0) {
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        No queries found
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        data.forEach(q => {
+
+            table.innerHTML += `
+                <tr>
+
+                    <td>${q.id}</td>
+
+                    <td>${escapeHtml(q.email || "-")}</td>
+
+                    <td>${escapeHtml(q.subject || "")}</td>
+
+                    <td>${escapeHtml(q.message || "")}</td>
+
+                    <td>${escapeHtml(q.status || "PENDING")}</td>
+
+                    <td>${escapeHtml(q.response || "-")}</td>
+
+                    <td>
+
+                        <button
+                            class="edit-btn"
+                            onclick="respondToQuery(${q.id})">
+
+                            Respond
+
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+        });
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+    }
 }
 // ================= RESPOND =================
 
 async function respondToQuery(id) {
 
-    const responseMessage = prompt("Enter response");
+    const responseMessage =
+        prompt("Enter response");
 
     if (!responseMessage) return;
 
     try {
 
-        const response = await fetch(`${QUERIES_API}/${id}`, {
-            method: "PUT",
-            headers: authHeaders(),
-            body: JSON.stringify({
-                status: "RESOLVED",
-                response: responseMessage
-            })
-        });
+        const response = await fetch(
+            `${QUERY_GET_API}/${id}`,
+            {
+                method: "PUT",
+
+                headers: authHeaders(),
+
+                body: JSON.stringify({
+                    status: "RESOLVED",
+                    response: responseMessage
+                })
+            }
+        );
 
         await handleResponse(response);
 
-        alert("Query responded successfully");
+        alert("Response saved");
 
         loadQueries();
 
     } catch (error) {
+
         console.error(error);
+
         alert(error.message);
     }
 }
-
 // ================= SEARCH =================
 
 function searchQueries() {
