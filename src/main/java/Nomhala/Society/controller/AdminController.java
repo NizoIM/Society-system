@@ -222,13 +222,6 @@ public class AdminController {
         payment.setStatus(PaymentStatus.APPROVED);
         paymentRepo.save(payment);
 
-// SEND EMAIL
-        emailService.send(
-                payment.getMember().getEmail(),
-                "Payment Approved",
-                "Your payment for " + payment.getPaymentMonth() + " has been approved."
-        );
-
         return ResponseEntity.ok(
                 new ApiResponse("Payment approved successfully")
         );
@@ -247,12 +240,6 @@ public class AdminController {
         payment.setStatus(PaymentStatus.REJECTED);
 
         paymentRepo.save(payment);
-
-        emailService.send(
-                payment.getMember().getEmail(),
-                "Payment Rejected",
-                "Your payment was rejected. Please contact admin."
-        );
 
         return ResponseEntity.ok(
                 new ApiResponse("Payment rejected successfully")

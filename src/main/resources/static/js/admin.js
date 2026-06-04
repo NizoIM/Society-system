@@ -1227,30 +1227,7 @@ function showNotification(message) {
 
     setTimeout(() => div.remove(), 3000);
 }
-//============================================
-//=========LIVE QUERY NOTIFICATION=============
-//=============================================
-let lastQueryCount = 0;
 
-async function checkNewQueries() {
-
-    const queries = await apiRequest(QUERIES_API);
-
-    if (!queries) return;
-
-    if (lastQueryCount && queries.length > lastQueryCount) {
-        showNotification("🔥 New member query received!");
-    }
-
-    lastQueryCount = queries.length;
-}
-
-setInterval(() => {
-    loadPayments();
-    loadQueries();
-    loadStats();
-    checkNewQueries(); // 🔔 LIVE ALERTS
-}, 5000);
 // =========================================
 // GLOBALS
 // =========================================
