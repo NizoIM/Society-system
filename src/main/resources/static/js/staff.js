@@ -70,6 +70,23 @@ async function handleResponse(response) {
 
     return await response.text();
 }
+function showSection(sectionId) {
+
+    document
+        .querySelectorAll(".dashboard-section")
+        .forEach(section => {
+            section.style.display = "none";
+        });
+
+    const target =
+        document.getElementById(sectionId);
+
+    if (target) {
+        target.style.display = "block";
+    }
+}
+
+window.showSection = showSection;
 
 // ================= LOAD PROFILE =================
 
@@ -84,34 +101,73 @@ async function loadProfile() {
 
         const user = await handleResponse(response);
 
-        document.getElementById("profile").innerHTML = `
+        const profile =
+            document.getElementById("profile");
+
+        if (!profile || !user) return;
+
+        profile.innerHTML = `
+
             <div class="profile-card">
+
+                <div class="profile-avatar">
+
+                    <img
+                        src="https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            `${user.firstName || ""} ${user.lastName || ""}`
+                        )}&background=0D8ABC&color=fff&size=180"
+                        alt="Staff Avatar">
+
+                </div>
 
                 <h2>
                     ${escapeHtml(user.firstName || "")}
                     ${escapeHtml(user.lastName || "")}
                 </h2>
 
-                <p><strong>Email:</strong> ${escapeHtml(user.email || "N/A")}</p>
-                <p><strong>Phone:</strong> ${escapeHtml(user.phone || "N/A")}</p>
-                <p><strong>Role:</strong> ${escapeHtml(user.role || "STAFF")}</p>
+                <p>
+                    <strong>Email:</strong>
+                    ${escapeHtml(user.email || "N/A")}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    ${escapeHtml(user.phone || "N/A")}
+                </p>
+
+                <p>
+                    <strong>Role:</strong>
+                    ${escapeHtml(user.role || "STAFF")}
+                </p>
 
                 <p>
                     <strong>Status:</strong>
-                    <span class="${user.enabled ? "active" : "inactive"}">
-                        ${user.enabled ? "ACTIVE" : "DISABLED"}
+
+                    <span class="${
+                        user.enabled
+                            ? "active"
+                            : "inactive"
+                    }">
+
+                        ${
+                            user.enabled
+                                ? "ACTIVE"
+                                : "DISABLED"
+                        }
+
                     </span>
+
                 </p>
 
             </div>
         `;
 
     } catch (error) {
+
         console.error(error);
         alert(error.message);
     }
 }
-
 // ================= UPLOAD PAYMENT =================
 
 async function uploadPayment() {
@@ -307,6 +363,8 @@ function escapeHtml(value) {
 // ================= INIT =================
 
 document.addEventListener("DOMContentLoaded", () => {
+
+ showSection("profile-section");
 
     loadProfile();
     loadQueries();

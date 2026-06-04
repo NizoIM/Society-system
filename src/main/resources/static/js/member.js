@@ -95,6 +95,23 @@ async function loadProfile() {
                 <p><strong>Email:</strong> ${user.email || "N/A"}</p>
                 <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
                 <p><strong>Role:</strong> ${user.role || "MEMBER"}</p>
+                  <p>
+                            <strong>Status:</strong>
+
+                              <span class="${
+                                  user.enabled
+                                      ? "active"
+                                      : "inactive"
+                              }">
+
+                                  ${
+                                      user.enabled
+                                          ? "ACTIVE"
+                                          : "DISABLED"
+                                  }
+
+                              </span>
+                          </p>
 
             </div>
         `;
