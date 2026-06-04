@@ -10,6 +10,7 @@ const ADMIN_API = `${BASE_URL}/api/admin`;
 
 const USERS_API = `${ADMIN_API}/users`;
 const PAYMENTS_API = `${ADMIN_API}/payments`;
+const QUERIES_API = `${ADMIN_API}/queries`;
 const STATS_API = `${ADMIN_API}/stats`;
 const AI_SUMMARY_API = `${ADMIN_API}/ai-summary`;
 
@@ -1257,6 +1258,6 @@ document.addEventListener(
         loadPaymentHistory();
         loadAiSummary();
         loadPaymentChart();
-        startAutoRefresh();
+
     }
 );
