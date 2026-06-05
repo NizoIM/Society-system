@@ -168,9 +168,12 @@ public class AdminController {
     // =========================================
 
     @GetMapping("/payments")
-    public List<PaymentAdminDTO> getPayments() {
+    public ResponseEntity<List<PaymentAdminDTO>> getPayments() {
 
-        return paymentRepo.findAll().stream().map(p -> {
+        List<PaymentAdminDTO> result =
+                new ArrayList<>();
+
+        for (Payment p : paymentRepo.findAll()) {
 
             PaymentAdminDTO dto =
                     new PaymentAdminDTO();
@@ -178,26 +181,26 @@ public class AdminController {
             dto.setId(p.getId());
 
             dto.setMemberEmail(
-
                     p.getMember() != null
-
                             ? p.getMember().getEmail()
-
                             : "Unknown"
             );
 
-            dto.setAmount(p.getAmount());
+            dto.setAmount(
+                    p.getAmount()
+            );
 
-            dto.setPaymentDate(p.getPaymentDate());
+            dto.setPaymentDate(
+                    p.getPaymentDate()
+            );
 
-            dto.setPaymentMonth(p.getPaymentMonth());
+            dto.setPaymentMonth(
+                    p.getPaymentMonth()
+            );
 
             dto.setStatus(
-
                     p.getStatus() != null
-
                             ? p.getStatus().name()
-
                             : "PENDING"
             );
 
@@ -205,9 +208,10 @@ public class AdminController {
                     p.getOriginalFileName()
             );
 
-            return dto;
+            result.add(dto);
+        }
 
-        }).toList();
+        return ResponseEntity.ok(result);
     }
     // =========================================
     // APPROVE PAYMENT
@@ -439,27 +443,31 @@ public class AdminController {
         for (Payment p : payments) {
 
             table.addCell(
-                    String.valueOf(
-                            p.getId()
-                    )
+                    String.valueOf(p.getId())
             );
 
             table.addCell(
-                    p.getMember().getEmail()
+                    p.getMember() != null
+                            ? p.getMember().getEmail()
+                            : "Unknown"
             );
 
             table.addCell(
-                    p.getAmount().toString()
+                    p.getAmount() != null
+                            ? p.getAmount().toString()
+                            : "0"
             );
 
             table.addCell(
-                    String.valueOf(
-                            p.getPaymentMonth()
-                    )
+                    p.getPaymentMonth() != null
+                            ? p.getPaymentMonth().toString()
+                            : "-"
             );
 
             table.addCell(
-                    p.getStatus().name()
+                    p.getStatus() != null
+                            ? p.getStatus().name()
+                            : "PENDING"
             );
         }
 
