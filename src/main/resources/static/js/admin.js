@@ -1092,14 +1092,14 @@ async function downloadStats() {
     try {
 
         const response = await fetch(
-            `${PAYMENT_EXPORT_API}/payments/export`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
+                                   PAYMENT_EXPORT_API,
+                                   {
+                                       method: "GET",
+                                       headers: {
+                                           Authorization: `Bearer ${token}`
+                                       }
+                                   }
+                               );
 
         if (!response.ok) {
             throw new Error("Download failed");
