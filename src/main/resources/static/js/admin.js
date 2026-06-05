@@ -1091,24 +1091,21 @@ async function downloadStats() {
 
     try {
 
-        const response =
-            await fetch(
-                `${PAYMENT_EXPORT_API}/payments/export`,
-                {
-                    method: "GET",
-
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+        const response = await fetch(
+            `${ADMIN_API}/payments/export`,
+            `${ADMIN_API}/payments/export`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-            );
+            }
+        );
 
         if (!response.ok) {
             throw new Error("Download failed");
         }
 
-        const blob =
-            await response.blob();
+        const blob = await response.blob();
 
         const url =
             window.URL.createObjectURL(blob);
@@ -1130,9 +1127,10 @@ async function downloadStats() {
     } catch (error) {
 
         console.error(error);
+
+        alert("Unable to download report");
     }
 }
-
 // =========================================
 // QUERIES (FIXED - SHOW ALL + RESPOND)
 // =========================================
