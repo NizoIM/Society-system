@@ -1092,7 +1092,7 @@ async function downloadStats() {
     try {
 
         const response = await fetch(
-            `${API_BASE}/payments/export`,
+            `${PAYMENT_EXPORT_API}/payments/export`,
             {
                 method: "GET",
                 headers: {
