@@ -1092,9 +1092,9 @@ async function downloadStats() {
     try {
 
         const response = await fetch(
-            `${ADMIN_API}/payments/export`,
-            `${ADMIN_API}/payments/export`,
+            `${API_BASE}/payments/export`,
             {
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -1128,7 +1128,7 @@ async function downloadStats() {
 
         console.error(error);
 
-        alert("Unable to download report");
+        alert(error.message);
     }
 }
 // =========================================
