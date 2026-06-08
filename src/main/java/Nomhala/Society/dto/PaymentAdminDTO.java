@@ -71,4 +71,10 @@ public class PaymentAdminDTO {
     public void setMemberEmail(String memberEmail) {
         this.memberEmail = memberEmail;
     }
+
+    public void setMonthsBehind(Integer monthsBehind) {
+    }
+
+    public void setMonthsAhead(Integer monthsAhead) {
+    }
 }

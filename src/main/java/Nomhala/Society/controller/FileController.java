@@ -7,84 +7,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
-import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequestMapping("/api/files")
-@CrossOrigin(origins = "*")
 public class FileController {
 
     @Autowired
-    private PaymentRepository paymentRepo;
-
-    // ================= VIEW PAYMENT FILE =================
+    private PaymentRepository paymentRepository;
 
     @GetMapping("/payment/{id}")
-    public ResponseEntity<Resource> getPaymentFile(
+    public ResponseEntity<Resource> viewPayment(
             @PathVariable Long id
-    ) {
+    ) throws Exception {
 
-        try {
+        Payment payment =
+                paymentRepository.findById(id)
+                        .orElseThrow(() ->
+                                new RuntimeException("Payment not found"));
 
-            Payment payment = paymentRepo.findById(id)
-                    .orElseThrow(() ->
-                            new RuntimeException("Payment not found"));
+        Path filePath =
+                Paths.get(payment.getProofPath());
 
-            File file = new File(payment.getProofPath());
+        Resource resource =
+                new UrlResource(
+                        filePath.toUri()
+                );
 
-            if (!file.exists()) {
-                return ResponseEntity.notFound().build();
-            }
-
-            Resource resource =
-                    new UrlResource(file.toURI().toURL());
-
-            String contentType = "application/octet-stream";
-
-            String filename =
-                    payment.getOriginalFileName();
-
-            if (filename != null) {
-
-                if (filename.endsWith(".pdf")) {
-                    contentType = "application/pdf";
-                }
-
-                else if (
-                        filename.endsWith(".png")) {
-
-                    contentType = "image/png";
-                }
-
-                else if (
-                        filename.endsWith(".jpg")
-                                || filename.endsWith(".jpeg")) {
-
-                    contentType = "image/jpeg";
-                }
-            }
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(
-                            HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=\"" + filename + "\""
-                    )
-                    .body(resource);
-
-        }
-
-        catch (MalformedURLException e) {
-
+        if (!resource.exists()) {
             throw new RuntimeException(
-                    "File error",
-                    e
+                    "File not found"
             );
         }
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=\"" +
+                                payment.getOriginalFileName() +
+                                "\""
+                )
+                .body(resource);
     }
 }

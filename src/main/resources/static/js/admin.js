@@ -728,76 +728,86 @@ function renderPayments(payments) {
 
     const table =
         document.querySelector(
-           "#adminPaymentTable tbody"
+            "#adminPaymentTable tbody"
         );
 
     if (!table) return;
 
     table.innerHTML = "";
 
+    if (!payments || payments.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    No payments found
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
     payments.forEach(payment => {
 
         table.innerHTML += `
 
-            <tr>
+        <tr>
 
-                <td>${payment.id}</td>
+            <td>${payment.id}</td>
 
-                <td>${escapeHtml(payment.memberEmail)}</td>
+            <td>${escapeHtml(payment.memberEmail || "")}</td>
 
-                <td>R${payment.amount}</td>
+            <td>R${payment.amount || 0}</td>
 
-                <td>${payment.paymentMonth || "-"}</td>
+            <td>${payment.paymentMonth || "-"}</td>
 
-                <td>${payment.paymentDate || "-"}</td>
+            <td>${payment.paymentDate || "-"}</td>
 
-                <td>${payment.status}</td>
+            <td>${payment.status || "PENDING"}</td>
 
-                <td>
+            <td>
+                Behind: ${payment.monthsBehind || 0}
+                <br>
+                Ahead: ${payment.monthsAhead || 0}
+            </td>
 
-                    Behind:
-                    ${payment.monthsBehind || 0}
+            <td>
+                ${
+                    payment.originalFileName
+                        ? `
+                            <a
+                                href="/api/files/payment/${payment.id}"
+                                target="_blank">
+                                View Proof
+                            </a>
+                        `
+                        : "-"
+                }
+            </td>
 
-                    <br>
+            <td>
 
-                    Ahead:
-                    ${payment.monthsAhead || 0}
+                ${
+                    payment.status === "PENDING"
+                        ? `
+                            <button
+                                class="edit-btn"
+                                onclick="approvePayment(${payment.id})">
+                                Approve
+                            </button>
 
-                </td>
+                            <button
+                                class="delete-btn"
+                                onclick="rejectPayment(${payment.id})">
+                                Reject
+                            </button>
+                        `
+                        : payment.status
+                }
 
-                <td>
+            </td>
 
-                    <a
-                        href="${BASE_URL}/api/files/payment/${payment.id}"
-                        target="_blank">
-
-                        View Proof
-
-                    </a>
-
-                </td>
-
-                <td>
-
-                    <button
-                        class="edit-btn"
-                        onclick="approvePayment(${payment.id})">
-
-                        Approve
-
-                    </button>
-
-                    <button
-                        class="delete-btn"
-                        onclick="rejectPayment(${payment.id})">
-
-                        Reject
-
-                    </button>
-
-                </td>
-
-            </tr>
+        </tr>
         `;
     });
 }
@@ -1002,7 +1012,69 @@ function renderUsers(users) {
         `;
     });
 }
+// ================= APPROVE PAYMENT =================
 
+async function approvePayment(id) {
+
+    if (!confirm("Approve this payment?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/payments/${id}/approve`,
+            {
+                method: "PUT",
+                headers: authHeaders(false)
+            }
+        );
+
+        await handleResponse(response);
+
+        alert("Payment approved successfully");
+
+        loadPayments();
+        loadStats();
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+// ================= REJECT PAYMENT =================
+
+async function rejectPayment(id) {
+
+    if (!confirm("Reject this payment?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/payments/${id}/reject`,
+            {
+                method: "PUT",
+                headers: authHeaders(false)
+            }
+        );
+
+        await handleResponse(response);
+
+        alert("Payment rejected successfully");
+
+        loadPayments();
+        loadStats();
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+    }
+}
 // =========================================
 // APPROVE / REJECT
 // =========================================

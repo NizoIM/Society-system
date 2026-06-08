@@ -207,6 +207,13 @@ public class AdminController {
             dto.setOriginalFileName(
                     p.getOriginalFileName()
             );
+            dto.setMonthsAhead(
+                    p.getMonthsAhead()
+            );
+
+            dto.setMonthsBehind(
+                    p.getMonthsBehind()
+            );
 
             result.add(dto);
         }
