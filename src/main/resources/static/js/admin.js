@@ -241,11 +241,27 @@ function showSection(sectionId) {
             section.style.display = "none";
         });
 
-    const target =
+    const selected =
         document.getElementById(sectionId);
 
-    if (target) {
-        target.style.display = "block";
+    if (selected) {
+        selected.style.display = "block";
+    }
+
+    if (sectionId === "payments-section") {
+        loadPayments();
+    }
+
+    if (sectionId === "queries-section") {
+        loadQueries();
+    }
+
+    if (sectionId === "members-section") {
+        loadUsers();
+    }
+
+    if (sectionId === "profile-section") {
+        loadProfile();
     }
 }
 
