@@ -928,15 +928,13 @@ async function loadPaymentHistory() {
                     <td>${payment.paymentDate || "-"}</td>
 
                     <td>
-
                         <a
-                             href="${BASE_URL}/api/files/payment/${payment.id}"
+                            href="https://society-kwgy.onrender.com/api/files/payment/${payment.id}"
                             target="_blank">
 
                             View Proof
 
                         </a>
-
                     </td>
 
                 </tr>
