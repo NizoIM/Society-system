@@ -811,7 +811,7 @@ async function viewProof(paymentId) {
     try {
 
         const response = await fetch(
-            `${BASE_URL}/files/payment/${paymentId}`,
+            `${PAYMENT_HISTORY_API}/files/payment/${paymentId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -864,7 +864,7 @@ async function loadPayments() {
                     <td>${p.status || "PENDING"}</td>
 
                     <td>
-                        <a href="${BASE_URL}/api/files/payment/${p.id}" target="_blank">
+                        <a href="${PAYMENT_HISTORY_API}/api/files/payment/${p.id}" target="_blank">
                             View
                         </a>
                     </td>
@@ -1046,7 +1046,7 @@ async function approvePayment(id) {
     try {
 
         const response = await fetch(
-            `${BASE_URL}/payments/${id}/approve`,
+            `${PAYMENT_HISTORY_API}/payments/${id}/approve`,
             {
                 method: "PUT",
                 headers: authHeaders(false)
@@ -1078,7 +1078,7 @@ async function rejectPayment(id) {
     try {
 
         const response = await fetch(
-            `${BASE_URL}/payments/${id}/reject`,
+            `${PAYMENT_HISTORY_API}/payments/${id}/reject`,
             {
                 method: "PUT",
                 headers: authHeaders(false)
