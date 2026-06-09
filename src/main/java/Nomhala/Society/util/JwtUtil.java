@@ -12,30 +12,32 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // FIXED SECRET (DO NOT REGENERATE)
+    // 🔥 BETTER: at least 32+ characters (DO NOT CHANGE AFTER DEPLOY)
     private final Key secretKey =
             Keys.hmacShaKeyFor(
-                    "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY_123456789"
+                    "THIS_IS_A_SUPER_SECURE_SECRET_KEY_FOR_JWT_SIGNING_123456"
                             .getBytes()
             );
 
+    // ================= GENERATE TOKEN =================
     public String generateToken(String email, String role) {
+
+        // FIX: ensure consistent format
+        String normalizedRole =
+                role.startsWith("ROLE_") ? role : "ROLE_" + role;
 
         return Jwts.builder()
                 .setSubject(email)
-
-                // IMPORTANT: normalize role
-                .claim("role", role)
-
+                .claim("role", normalizedRole)
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(System.currentTimeMillis() + 86400000)
                 )
-
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    // ================= EXTRACT CLAIMS =================
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
@@ -44,14 +46,17 @@ public class JwtUtil {
                 .getBody();
     }
 
+    // ================= EMAIL =================
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
+    // ================= ROLE =================
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
     }
 
+    // ================= VALIDATE =================
     public boolean validateToken(String token) {
         try {
             extractAllClaims(token);
