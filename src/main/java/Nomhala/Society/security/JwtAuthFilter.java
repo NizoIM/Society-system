@@ -29,19 +29,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws IOException, ServletException {
 
-        // 🔥 FIX 2: SKIP STATIC + PUBLIC RESOURCES
+        String uri = request.getRequestURI();
+
+        // ✅ SKIP ONLY NON-SECURED ROUTES
         if (
-                request.getRequestURI().startsWith("/pages/")
-                        || request.getRequestURI().startsWith("/css/")
-                        || request.getRequestURI().startsWith("/js/")
-                        || request.getRequestURI().startsWith("/images/")
-                        || request.getRequestURI().startsWith("/api/auth/")
+                uri.startsWith("/pages/") ||
+                        uri.startsWith("/css/") ||
+                        uri.startsWith("/js/") ||
+                        uri.startsWith("/images/") ||
+                        uri.startsWith("/api/auth/")
         ) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        // Skip auth endpoints
-        if (request.getRequestURI().startsWith("/api/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,7 +63,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // FIX: avoid ROLE_ROLE_ duplication
             String authorityRole =
                     role.startsWith("ROLE_") ? role : "ROLE_" + role;
 
