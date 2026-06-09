@@ -29,8 +29,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws IOException, ServletException {
 
+        // 🔥 FIX 2: SKIP STATIC + PUBLIC RESOURCES
+        if (
+                request.getRequestURI().startsWith("/pages/")
+                        || request.getRequestURI().startsWith("/css/")
+                        || request.getRequestURI().startsWith("/js/")
+                        || request.getRequestURI().startsWith("/images/")
+                        || request.getRequestURI().startsWith("/api/auth/")
+        ) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // Skip auth endpoints
-        if (request.getRequestURI().startsWith("/api/auth/")) {
+        if (request.getRequestURI().startsWith("/api/")) {
             filterChain.doFilter(request, response);
             return;
         }
