@@ -743,89 +743,98 @@ async function loadPayments() {
 function renderPayments(payments) {
 
     const table =
-        document.querySelector(
-            "#adminPaymentTable tbody"
-        );
+        document.querySelector("#adminPaymentTable tbody");
 
     if (!table) return;
 
     table.innerHTML = "";
 
-    if (!payments || payments.length === 0) {
-
-        table.innerHTML = `
-            <tr>
-                <td colspan="9">
-                    No payments found
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
     payments.forEach(payment => {
 
         table.innerHTML += `
+            <tr>
 
-        <tr>
+                <td>${payment.id}</td>
 
-            <td>${payment.id}</td>
+                <td>${escapeHtml(payment.memberEmail || "Unknown")}</td>
 
-            <td>${escapeHtml(payment.memberEmail || "")}</td>
+                <td>R${payment.amount}</td>
 
-            <td>R${payment.amount || 0}</td>
+                <td>${payment.paymentMonth || "-"}</td>
 
-            <td>${payment.paymentMonth || "-"}</td>
+                <td>${payment.paymentDate || "-"}</td>
 
-            <td>${payment.paymentDate || "-"}</td>
+                <td>${payment.status}</td>
 
-            <td>${payment.status || "PENDING"}</td>
+                <td>
+                    Behind: ${payment.monthsBehind || 0}
+                    <br>
+                    Ahead: ${payment.monthsAhead || 0}
+                </td>
 
-            <td>
-                Behind: ${payment.monthsBehind || 0}
-                <br>
-                Ahead: ${payment.monthsAhead || 0}
-            </td>
-
-            <td>
-                ${
-                    payment.originalFileName
-                        ? `
-                            <a
-                                href="/api/files/payment/${payment.id}"
-                                target="_blank">
-                                View Proof
-                            </a>
-                        `
+                <td>
+                    ${
+                        payment.originalFileName
+                        ? `<button onclick="viewProof(${payment.id})">
+                              View Proof
+                           </button>`
                         : "-"
-                }
-            </td>
+                    }
+                </td>
 
-            <td>
+                <td>
 
-                ${
-                    payment.status === "PENDING"
-                        ? `
-                            <button
-                                class="edit-btn"
-                                onclick="approvePayment(${payment.id})">
-                                Approve
-                            </button>
+                    <button
+                        class="approve-btn"
+                        onclick="approvePayment(${payment.id})">
 
-                            <button
-                                class="delete-btn"
-                                onclick="rejectPayment(${payment.id})">
-                                Reject
-                            </button>
-                        `
-                        : payment.status
-                }
+                        Approve
 
-            </td>
+                    </button>
 
-        </tr>
+                    <button
+                        class="reject-btn"
+                        onclick="rejectPayment(${payment.id})">
+
+                        Reject
+
+                    </button>
+
+                </td>
+
+            </tr>
         `;
     });
+}
+async function viewProof(paymentId) {
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/files/payment/${paymentId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load proof");
+        }
+
+        const blob = await response.blob();
+
+        const url =
+            window.URL.createObjectURL(blob);
+
+        window.open(url, "_blank");
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+    }
 }
 // =========================================
 // PAYMENTS
