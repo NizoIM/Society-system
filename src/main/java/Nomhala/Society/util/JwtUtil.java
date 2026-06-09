@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -13,77 +12,51 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // ================= SECRET KEY =================
+    // FIXED SECRET (DO NOT REGENERATE)
     private final Key secretKey =
-            Keys.secretKeyFor(SignatureAlgorithm.HS256);
+            Keys.hmacShaKeyFor(
+                    "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY_123456789"
+                            .getBytes()
+            );
 
-    // ================= GENERATE TOKEN =================
-    public String generateToken(
-            String email,
-            String role
-    ) {
+    public String generateToken(String email, String role) {
 
         return Jwts.builder()
-
                 .setSubject(email)
 
+                // IMPORTANT: normalize role
                 .claim("role", role)
 
                 .setIssuedAt(new Date())
-
                 .setExpiration(
-                        new Date(
-                                System.currentTimeMillis()
-                                        + 1000 * 60 * 60 * 24
-                        )
+                        new Date(System.currentTimeMillis() + 86400000)
                 )
 
-                .signWith(secretKey)
-
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ================= EXTRACT CLAIMS =================
     public Claims extractAllClaims(String token) {
-
         return Jwts.parserBuilder()
-
                 .setSigningKey(secretKey)
-
                 .build()
-
                 .parseClaimsJws(token)
-
                 .getBody();
     }
 
-    // ================= EXTRACT EMAIL =================
     public String extractEmail(String token) {
-
-        return extractAllClaims(token)
-                .getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
-    // ================= EXTRACT ROLE =================
     public String extractRole(String token) {
-
-        return extractAllClaims(token)
-                .get("role", String.class);
+        return extractAllClaims(token).get("role", String.class);
     }
 
-    // ================= VALIDATE TOKEN =================
     public boolean validateToken(String token) {
-
         try {
-
             extractAllClaims(token);
-
             return true;
-
-        }
-
-        catch (Exception e) {
-
+        } catch (Exception e) {
             return false;
         }
     }
