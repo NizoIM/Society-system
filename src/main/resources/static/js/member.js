@@ -56,6 +56,7 @@ function showSection(sectionId) {
 }
 
 window.showSection = showSection;
+
 // ================= PROFILE =================
 async function loadProfile() {
 
@@ -200,40 +201,40 @@ async function loadQueries() {
 // ================= UPLOAD PAYMENT =================
 
 async function uploadPayment() {
-
-    const file = document.getElementById("proofFile").files[0];
-    const amount = document.getElementById("amount").value;
-
-    if (!file || !amount) {
-        alert("Select file + amount");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("amount", amount);
-
     try {
+        const email = localStorage.getItem("email"); // or wherever you store it
+        const amount = document.getElementById("amount").value;
+        const file = document.getElementById("proofFile").files[0];
 
-        const res = await fetch(PAYMENT_API, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            body: formData
-        });
+        if (!amount || !file) {
+            alert("Please enter amount and select a file");
+            return;
+        }
 
-        if (!res.ok) throw new Error("Upload failed");
+        const formData = new FormData();
+        formData.append("amount", amount);
+        formData.append("file", file);
 
-        alert("Payment uploaded");
+        const response = await fetch(
+            `/api/member/payment/${encodeURIComponent(email)}`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
-        loadPaymentHistory();
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Backend error:", errorText);
+            throw new Error("Upload failed");
+        }
 
+        alert("Payment uploaded successfully");
     } catch (err) {
         console.error(err);
+        alert("Upload failed");
     }
 }
-
 // ================= PAYMENT HISTORY =================
 
 async function loadPaymentHistory() {

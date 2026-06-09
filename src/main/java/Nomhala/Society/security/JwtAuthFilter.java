@@ -29,13 +29,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws IOException, ServletException {
 
-        String header = request.getHeader("Authorization");
-
-        if (header == null || !header.startsWith("Bearer ")) {
+        // Skip auth endpoints
+        if (request.getRequestURI().startsWith("/api/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
-        if (request.getRequestURI().startsWith("/api/auth/")) {
+
+        String header = request.getHeader("Authorization");
+
+        if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,11 +50,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String email = claims.getSubject();
             String role = claims.get("role", String.class);
 
+            if (role == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // FIX: avoid ROLE_ROLE_ duplication
+            String authorityRole =
+                    role.startsWith("ROLE_") ? role : "ROLE_" + role;
+
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(
                             email,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                            List.of(new SimpleGrantedAuthority(authorityRole))
                     );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
