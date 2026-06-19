@@ -20,7 +20,7 @@ public class FileController {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @GetMapping("/payment/{id}")
+    @GetMapping("/api/files/payment/{id}")
     public ResponseEntity<Resource> viewPayment(
             @PathVariable Long id
     ) throws Exception {

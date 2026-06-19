@@ -929,7 +929,7 @@ async function loadPaymentHistory() {
 
                     <td>
                         <a
-                            href="https://society-kwgy.onrender.com/api/files/payment/${payment.id}"
+                            href="api/files/payment/${payment.id}"
                             target="_blank">
 
                             View Proof
