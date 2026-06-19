@@ -20,7 +20,7 @@ public class FileController {
     @Autowired
     private PaymentRepository paymentRepository;
 
-    @GetMapping("/api/files/payment/{id}")
+    @GetMapping("/payment/{id}")
     public ResponseEntity<Resource> viewPayment(
             @PathVariable Long id
     ) throws Exception {
@@ -34,14 +34,10 @@ public class FileController {
                 Paths.get(payment.getProofPath());
 
         Resource resource =
-                new UrlResource(
-                        filePath.toUri()
-                );
+                new UrlResource(filePath.toUri());
 
         if (!resource.exists()) {
-            throw new RuntimeException(
-                    "File not found"
-            );
+            throw new RuntimeException("File not found");
         }
 
         return ResponseEntity.ok()

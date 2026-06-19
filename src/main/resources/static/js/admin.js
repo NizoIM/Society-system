@@ -806,12 +806,30 @@ function renderPayments(payments) {
         `;
     });
 }
+async function viewPayment(id) {
+
+    const response = await fetch(
+        `/api/files/payment/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+
+    window.open(url, "_blank");
+}
+
 async function viewProof(paymentId) {
 
     try {
 
         const response = await fetch(
-            `${PAYMENT_HISTORY_API}/files/payment/${paymentId}`,
+            `/api/files/payment/${paymentId}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -820,10 +838,15 @@ async function viewProof(paymentId) {
         );
 
         if (!response.ok) {
-            throw new Error("Unable to load proof");
+
+            const error =
+                await response.text();
+
+            throw new Error(error);
         }
 
-        const blob = await response.blob();
+        const blob =
+            await response.blob();
 
         const url =
             window.URL.createObjectURL(blob);
@@ -833,7 +856,11 @@ async function viewProof(paymentId) {
     } catch (error) {
 
         console.error(error);
-        alert(error.message);
+
+        alert(
+            "Unable to load proof: " +
+            error.message
+        );
     }
 }
 // =========================================
