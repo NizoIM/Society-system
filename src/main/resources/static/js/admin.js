@@ -806,63 +806,7 @@ function renderPayments(payments) {
         `;
     });
 }
-async function viewPayment(id) {
 
-    const response = await fetch(
-        `/api/files/payment/${id}`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-
-    const blob = await response.blob();
-
-    const url = window.URL.createObjectURL(blob);
-
-    window.open(url, "_blank");
-}
-
-async function viewProof(paymentId) {
-
-    try {
-
-        const response = await fetch(
-            `/api/files/payment/${paymentId}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        );
-
-        if (!response.ok) {
-
-            const error =
-                await response.text();
-
-            throw new Error(error);
-        }
-
-        const blob =
-            await response.blob();
-
-        const url =
-            window.URL.createObjectURL(blob);
-
-        window.open(url, "_blank");
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Unable to load proof: " +
-            error.message
-        );
-    }
-}
 // =========================================
 // PAYMENTS
 // =========================================
@@ -891,7 +835,9 @@ async function loadPayments() {
                     <td>${p.status || "PENDING"}</td>
 
                     <td>
-                        <a href="${PAYMENT_HISTORY_API}/api/files/payment/${p.id}" target="_blank">
+                        <a
+                            href="/api/files/payment/${p.id}"
+                            target="_blank">
                             View
                         </a>
                     </td>
@@ -903,77 +849,77 @@ async function loadPayments() {
         console.error(err);
     }
 }
+
+async function viewProof(paymentId) {
+
+    try {
+
+        const response = await fetch(
+            `/api/files/payment/${paymentId}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load proof");
+        }
+
+        const blob = await response.blob();
+
+        const url = URL.createObjectURL(blob);
+
+        window.open(url, "_blank");
+
+    } catch (error) {
+
+        console.error(error);
+        alert(error.message);
+    }
+}
 // =========================================
 // PAYMENT HISTORY
 // =========================================
 
 async function loadPaymentHistory() {
-
     try {
+        const payments = await apiRequest(PAYMENT_HISTORY_API);
 
-        const payments =
-            await apiRequest(
-                PAYMENT_HISTORY_API
-            );
-
-        const table =
-            document.querySelector(
-                "#paymentHistoryTable tbody"
-            );
-
+        const table = document.querySelector("#paymentHistoryTable tbody");
         if (!table) return;
 
-        table.innerHTML = "";
-
-        if (!payments.length) {
-
+        if (!Array.isArray(payments) || payments.length === 0) {
             table.innerHTML = `
                 <tr>
-                    <td colspan="6">
-                        No payments found
-                    </td>
+                    <td colspan="6">No payments found</td>
                 </tr>
             `;
-
             return;
         }
 
-        payments.forEach(payment => {
+        const rows = payments.map(payment => `
+            <tr>
+                <td>${payment.id ?? "-"}</td>
+                <td>${payment.paymentMonth ?? "-"}</td>
+                <td>R${payment.amount ?? 0}</td>
+                <td>${payment.status ?? "-"}</td>
+                <td>${payment.paymentDate ?? "-"}</td>
+                <td>
+                    <a href="api/files/payment/${encodeURIComponent(payment.id)}" target="_blank">
+                        View Proof
+                    </a>
+                </td>
+            </tr>
+        `).join("");
 
-            table.innerHTML += `
-
-                <tr>
-
-                    <td>${payment.id || "-"}</td>
-
-                    <td>${payment.paymentMonth || "-"}</td>
-
-                    <td>R${payment.amount || 0}</td>
-
-                    <td>${payment.status || "-"}</td>
-
-                    <td>${payment.paymentDate || "-"}</td>
-
-                    <td>
-                        <a
-                            href="api/files/payment/${payment.id}"
-                            target="_blank">
-
-                            View Proof
-
-                        </a>
-                    </td>
-
-                </tr>
-            `;
-        });
+        table.innerHTML = rows;
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Failed to load payment history:", error);
     }
 }
-
 // =========================================
 // USERS
 // =========================================
