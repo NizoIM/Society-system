@@ -14,32 +14,32 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    public void sendOtp(
-            String to,
-            String otp
-    ) {
+    // ================= OTP =================
 
-        SimpleMailMessage message =
-                new SimpleMailMessage();
+    public void sendOtp(String to, String otp) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
 
         message.setTo(to);
+        message.setSubject("Nomhala Society - OTP Verification");
 
-        message.setSubject(
-                "MySociety OTP Verification"
-        );
+        message.setText("""
+                Your OTP is:
 
-        message.setText(
-                "Your OTP is: " + otp
-        );
+                %s
+
+                This OTP expires in 5 minutes.
+
+                Do not share this code with anyone.
+                """.formatted(otp));
 
         mailSender.send(message);
     }
 
-    public void send(String email, String paymentApproved, String s) {
-
-    }
+    // ================= VERIFY EMAIL =================
 
     public void sendVerificationEmail(User user) {
+
         try {
 
             String link =
@@ -49,68 +49,145 @@ public class EmailService {
             MimeMessage message = mailSender.createMimeMessage();
 
             MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true);
+                    new MimeMessageHelper(message, true, "UTF-8");
 
             helper.setTo(user.getEmail());
 
             helper.setSubject("Verify your Nomhala Society account");
 
             helper.setText("""
-                <h2>Welcome to Nomhala Society</h2>
+                    <html>
 
-                <p>Click the button below to verify your email.</p>
+                    <body style="font-family:Arial;background:#f5f5f5;padding:30px;">
 
-                <a href="%s"
-                   style="
-                     background:#0d6efd;
-                     color:white;
-                     padding:12px 25px;
-                     text-decoration:none;
-                     border-radius:6px;">
-                     Verify Email
-                </a>
+                        <div style="
+                            max-width:600px;
+                            margin:auto;
+                            background:white;
+                            padding:30px;
+                            border-radius:10px;
+                            box-shadow:0 0 10px rgba(0,0,0,.1);">
 
-                <br><br>
+                            <h2 style="color:#0d6efd;">
+                                Welcome to Nomhala Society
+                            </h2>
 
-                If you did not create this account, ignore this email.
-                """.formatted(link), true);
+                            <p>
+                                Thank you for registering.
+                            </p>
+
+                            <p>
+                                Please verify your email before logging in.
+                            </p>
+
+                            <p style="text-align:center;margin:40px 0;">
+
+                                <a href="%s"
+                                   style="
+                                       background:#0d6efd;
+                                       color:white;
+                                       padding:14px 28px;
+                                       text-decoration:none;
+                                       border-radius:6px;
+                                       font-weight:bold;">
+                                    Verify Email
+                                </a>
+
+                            </p>
+
+                            <p>
+                                If the button doesn't work, copy and paste this
+                                link into your browser:
+                            </p>
+
+                            <p>%s</p>
+
+                            <hr>
+
+                            <small>
+                                If you didn't create this account,
+                                simply ignore this email.
+                            </small>
+
+                        </div>
+
+                    </body>
+
+                    </html>
+                    """.formatted(link, link), true);
 
             mailSender.send(message);
 
         } catch (Exception e) {
-            e.printStackTrace();
+
+            throw new RuntimeException(
+                    "Failed to send verification email",
+                    e
+            );
         }
     }
 
-    @Service
-    public class ReminderService {
+    // ================= PAYMENT STATUS =================
 
-        @Autowired
-        private JavaMailSender mailSender;
+    public void sendPaymentStatus(String email,
+                                  boolean approved,
+                                  String message) {
 
-        public void sendReminder(
-                String to,
-                String month
-        ) {
+        SimpleMailMessage mail = new SimpleMailMessage();
 
-            SimpleMailMessage mail =
-                    new SimpleMailMessage();
+        mail.setTo(email);
 
-            mail.setTo(to);
+        if (approved) {
 
-            mail.setSubject(
-                    "Society Payment Reminder"
-            );
+            mail.setSubject("Payment Approved");
 
-            mail.setText(
+            mail.setText("""
+                    Congratulations!
 
-                    "Your payment for "
-                            + month +
-                            " is overdue."
-            );
+                    Your payment has been approved.
 
-            mailSender.send(mail);
+                    %s
+
+                    Thank you.
+                    """.formatted(message));
+
+        } else {
+
+            mail.setSubject("Payment Rejected");
+
+            mail.setText("""
+                    Unfortunately your payment was rejected.
+
+                    Reason:
+
+                    %s
+
+                    Please upload a new proof of payment.
+                    """.formatted(message));
         }
 
+        mailSender.send(mail);
+    }
+
+    // ================= PAYMENT REMINDER =================
+
+    public void sendReminder(String to, String month) {
+
+        SimpleMailMessage mail = new SimpleMailMessage();
+
+        mail.setTo(to);
+
+        mail.setSubject("Nomhala Society Payment Reminder");
+
+        mail.setText("""
+                This is a reminder that your payment for %s
+                is overdue.
+
+                Please make payment as soon as possible.
+
+                Thank you.
+                """.formatted(month));
+
+        mailSender.send(mail);
     }
 }
