@@ -50,7 +50,7 @@ public class AuthService {
         user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEnabled(true);
-        user.setRole(Role.MEMBER);
+        user.setRole(Role.valueOf(request.getRole().toUpperCase()));
 
         userRepository.save(user);
 

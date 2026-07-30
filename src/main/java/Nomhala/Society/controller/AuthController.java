@@ -5,6 +5,7 @@ import Nomhala.Society.dto.RegisterRequest;
 import Nomhala.Society.service.AuthService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -31,10 +32,12 @@ public class AuthController {
     // REGISTER USER
     // =========================
     @PostMapping("/register")
-    public String register(
-            @RequestBody RegisterRequest request
-    ) {
-        return authService.register(request);
+    public ResponseEntity<?> register(
+            @RequestBody RegisterRequest request) {
+
+        return ResponseEntity.ok(
+                authService.register(request)
+        );
     }
     @PostMapping("/send-otp")
     public String sendOtp(@RequestParam String email) {
