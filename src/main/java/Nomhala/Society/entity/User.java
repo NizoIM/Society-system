@@ -23,11 +23,31 @@ public class User {
 
     @OneToMany(mappedBy = "member")
     private List<Payment> payments;
+
+    @Column(nullable = false)
+    private boolean enabled = false;
+
+    @Column(length = 100)
+    private String verificationToken;
     private String phone;
 
     private String password;
 
-    private boolean enabled = true;
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
+    }
 
     @Enumerated(EnumType.STRING)
     private Role role;

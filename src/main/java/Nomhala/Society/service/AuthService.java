@@ -5,6 +5,7 @@ import Nomhala.Society.entity.User;
 import Nomhala.Society.entity.Role;
 import Nomhala.Society.repository.UserRepository;
 import Nomhala.Society.util.JwtUtil;
+import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +38,7 @@ public class AuthService {
     private final Map<String, OtpData> otpStore = new ConcurrentHashMap<>();
 
     // ================= REGISTER =================
+
     public String register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -44,17 +46,29 @@ public class AuthService {
         }
 
         User user = new User();
+
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEnabled(true);
+
+        // Keep this if only admins should create ADMIN/STAFF users.
         user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+
+        // User cannot login until email is verified
+        user.setEnabled(false);
+
+        // Generate verification token
+        String token = UUID.randomUUID().toString();
+        user.setVerificationToken(token);
 
         userRepository.save(user);
 
-        return "Registration Successful";
+        // Send verification email
+        emailService.sendVerificationEmail(user);
+
+        return "Registration successful. Please check your email to verify your account.";
     }
 
     // ================= LOGIN =================
@@ -63,6 +77,11 @@ public class AuthService {
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (!user.isEnabled()) {
+            throw new RuntimeException(
+                    "Please verify your email before logging in."
+            );
+        }
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }

@@ -17,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 🔍 SEARCH FEATURE
     List<User> findByEmailContaining(String email);
+    Optional<User> findByVerificationToken(String verificationToken);
 }
