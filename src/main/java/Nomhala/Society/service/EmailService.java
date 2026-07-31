@@ -51,6 +51,7 @@ public class EmailService {
             MimeMessageHelper helper =
                     new MimeMessageHelper(message, true, "UTF-8");
 
+            helper.setFrom("nizoinga6@gmail.com");
             helper.setTo(user.getEmail());
 
             helper.setSubject("Verify your Nomhala Society account");
