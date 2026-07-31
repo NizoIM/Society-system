@@ -119,11 +119,8 @@ public class EmailService {
             mailSender.send(message);
 
         } catch (Exception e) {
-
-            throw new RuntimeException(
-                    "Failed to send verification email",
-                    e
-            );
+            e.printStackTrace();
+            throw new RuntimeException("Failed to send verification email", e);
         }
     }
 
