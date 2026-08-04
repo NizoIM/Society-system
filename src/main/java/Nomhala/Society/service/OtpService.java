@@ -3,8 +3,6 @@ package Nomhala.Society.service;
 import Nomhala.Society.entity.OtpVerification;
 import Nomhala.Society.repository.OtpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,7 +12,7 @@ import java.time.LocalDateTime;
 public class OtpService {
 
     @Autowired
-    private JavaMailSender mailSender;
+    private SendGridService sendGridService;
 
     @Autowired
     private OtpRepository repo;
@@ -32,12 +30,10 @@ public class OtpService {
 
         repo.save(record);
 
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(email);
-        msg.setSubject("OTP Verification");
-        msg.setText("Your OTP is: " + otp);
+        String subject = "OTP Verification";
+        String content = "Your OTP is: " + otp;
 
-        mailSender.send(msg);
+        sendGridService.sendEmail(email, subject, content);
     }
 
     public boolean verifyOtp(String email, String otp) {
@@ -57,3 +53,4 @@ public class OtpService {
         otpRepository.deleteByEmail(email);
     }
 }
+
