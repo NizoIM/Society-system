@@ -1,29 +1,22 @@
 package Nomhala.Society.service;
 
 import Nomhala.Society.entity.User;
-import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
     @Autowired
-    private JavaMailSender mailSender;
+    private SendGridService sendGridService;
 
     // ================= OTP =================
 
     public void sendOtp(String to, String otp) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        String subject = "Nomhala Society - OTP Verification";
 
-        message.setTo(to);
-        message.setSubject("Nomhala Society - OTP Verification");
-
-        message.setText("""
+        String content = """
                 Your OTP is:
 
                 %s
@@ -31,98 +24,83 @@ public class EmailService {
                 This OTP expires in 5 minutes.
 
                 Do not share this code with anyone.
-                """.formatted(otp));
+                """.formatted(otp);
 
-        mailSender.send(message);
+        sendGridService.sendEmail(to, subject, content);
     }
 
     // ================= VERIFY EMAIL =================
 
     public void sendVerificationEmail(User user) {
 
-        try {
+        String link =
+                "https://society-kwgy.onrender.com/api/auth/verify?token="
+                        + user.getVerificationToken();
 
-            String link =
-                    "https://society-kwgy.onrender.com/api/auth/verify?token="
-                            + user.getVerificationToken();
+        String subject = "Verify your Nomhala Society account";
 
-            MimeMessage message = mailSender.createMimeMessage();
+        String htmlContent = """
+                <html>
 
-            MimeMessageHelper helper =
-                    new MimeMessageHelper(message, true, "UTF-8");
+                <body style="font-family:Arial;background:#f5f5f5;padding:30px;">
 
-            helper.setFrom("nizoinga6@gmail.com");
-            helper.setTo(user.getEmail());
+                    <div style="
+                        max-width:600px;
+                        margin:auto;
+                        background:white;
+                        padding:30px;
+                        border-radius:10px;
+                        box-shadow:0 0 10px rgba(0,0,0,.1);">
 
-            helper.setSubject("Verify your Nomhala Society account");
+                        <h2 style="color:#0d6efd;">
+                            Welcome to Nomhala Society
+                        </h2>
 
-            helper.setText("""
-                    <html>
+                        <p>
+                            Thank you for registering.
+                        </p>
 
-                    <body style="font-family:Arial;background:#f5f5f5;padding:30px;">
+                        <p>
+                            Please verify your email before logging in.
+                        </p>
 
-                        <div style="
-                            max-width:600px;
-                            margin:auto;
-                            background:white;
-                            padding:30px;
-                            border-radius:10px;
-                            box-shadow:0 0 10px rgba(0,0,0,.1);">
+                        <p style="text-align:center;margin:40px 0;">
 
-                            <h2 style="color:#0d6efd;">
-                                Welcome to Nomhala Society
-                            </h2>
+                            <a href="%s"
+                               style="
+                                   background:#0d6efd;
+                                   color:white;
+                                   padding:14px 28px;
+                                   text-decoration:none;
+                                   border-radius:6px;
+                                   font-weight:bold;">
+                                Verify Email
+                            </a>
 
-                            <p>
-                                Thank you for registering.
-                            </p>
+                        </p>
 
-                            <p>
-                                Please verify your email before logging in.
-                            </p>
+                        <p>
+                            If the button doesn't work, copy and paste this
+                            link into your browser:
+                        </p>
 
-                            <p style="text-align:center;margin:40px 0;">
+                        <p>%s</p>
 
-                                <a href="%s"
-                                   style="
-                                       background:#0d6efd;
-                                       color:white;
-                                       padding:14px 28px;
-                                       text-decoration:none;
-                                       border-radius:6px;
-                                       font-weight:bold;">
-                                    Verify Email
-                                </a>
+                        <hr>
 
-                            </p>
+                        <small>
+                            If you didn't create this account,
+                            simply ignore this email.
+                        </small>
 
-                            <p>
-                                If the button doesn't work, copy and paste this
-                                link into your browser:
-                            </p>
+                    </div>
 
-                            <p>%s</p>
+                </body>
 
-                            <hr>
+                </html>
+                """.formatted(link, link);
 
-                            <small>
-                                If you didn't create this account,
-                                simply ignore this email.
-                            </small>
-
-                        </div>
-
-                    </body>
-
-                    </html>
-                    """.formatted(link, link), true);
-
-            mailSender.send(message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to send verification email", e);
-        }
+        sendGridService.sendEmail(user.getEmail(), subject, htmlContent);
     }
 
     // ================= PAYMENT STATUS =================
@@ -131,15 +109,14 @@ public class EmailService {
                                   boolean approved,
                                   String message) {
 
-        SimpleMailMessage mail = new SimpleMailMessage();
-
-        mail.setTo(email);
+        String subject;
+        String content;
 
         if (approved) {
 
-            mail.setSubject("Payment Approved");
+            subject = "Payment Approved";
 
-            mail.setText("""
+            content = """
                     Congratulations!
 
                     Your payment has been approved.
@@ -147,13 +124,13 @@ public class EmailService {
                     %s
 
                     Thank you.
-                    """.formatted(message));
+                    """.formatted(message);
 
         } else {
 
-            mail.setSubject("Payment Rejected");
+            subject = "Payment Rejected";
 
-            mail.setText("""
+            content = """
                     Unfortunately your payment was rejected.
 
                     Reason:
@@ -161,31 +138,27 @@ public class EmailService {
                     %s
 
                     Please upload a new proof of payment.
-                    """.formatted(message));
+                    """.formatted(message);
         }
 
-        mailSender.send(mail);
+        sendGridService.sendEmail(email, subject, content);
     }
 
     // ================= PAYMENT REMINDER =================
 
     public void sendReminder(String to, String month) {
 
-        SimpleMailMessage mail = new SimpleMailMessage();
+        String subject = "Nomhala Society Payment Reminder";
 
-        mail.setTo(to);
-
-        mail.setSubject("Nomhala Society Payment Reminder");
-
-        mail.setText("""
+        String content = """
                 This is a reminder that your payment for %s
                 is overdue.
 
                 Please make payment as soon as possible.
 
                 Thank you.
-                """.formatted(month));
+                """.formatted(month);
 
-        mailSender.send(mail);
+        sendGridService.sendEmail(to, subject, content);
     }
 }
