@@ -2,6 +2,7 @@ package Nomhala.Society.service;
 
 import Nomhala.Society.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -9,6 +10,9 @@ public class EmailService {
 
     @Autowired
     private SendGridService sendGridService;
+
+    @Value("${app.base.url:https://society-system-production.up.railway.app}")
+    private String baseUrl;
 
     // ================= OTP =================
 
@@ -34,7 +38,7 @@ public class EmailService {
     public void sendVerificationEmail(User user) {
 
         String link =
-                "https://society-kwgy.onrender.com/api/auth/verify?token="
+                baseUrl + "/api/auth/verify?token="
                         + user.getVerificationToken();
 
         String subject = "Verify your Nomhala Society account";
