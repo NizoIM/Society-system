@@ -8,7 +8,7 @@ if (!token) {
 
 // ================= API BASE =================
 
-const API_BASE = "https://society-kwgy.onrender.com/api/staff";
+const API_BASE = "https://society-system-production.up.railway.app/api/staff";
 
 // ================= ENDPOINTS =================
 

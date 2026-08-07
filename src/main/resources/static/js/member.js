@@ -9,7 +9,7 @@ if (!token || !email) {
 
 // ================= BASE =================
 
-const BASE_URL = "https://society-kwgy.onrender.com/api/member";
+const BASE_URL = "https://society-system-production.up.railway.app/api/member";
 
 // ================= ENDPOINTS (MATCH CONTROLLER EXACTLY) =================
 

@@ -9,7 +9,7 @@ document.getElementById("loginForm")
     try {
 
         const response = await fetch(
-            "https://society-kwgy.onrender.com/api/auth/login",
+            "https://society-system-production.up.railway.app/api/auth/login",
             {
                 method: "POST",
                 headers: {
