@@ -8,6 +8,7 @@ import Nomhala.Society.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,7 @@ public class MemberController {
 
     // ================= PROFILE =================
 
+    @Transactional
     @GetMapping("/profile/{email}")
     public ResponseEntity<User> profile(@PathVariable String email) {
 
@@ -56,6 +58,7 @@ public class MemberController {
 
     // ================= PAYMENT UPLOAD (FIXED) =================
 
+    @Transactional
     @PostMapping("/payment/{email}")
     public ResponseEntity<PaymentDTO> uploadPayment(
 
