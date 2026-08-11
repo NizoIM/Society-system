@@ -8,6 +8,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
@@ -20,6 +21,7 @@ public class FileController {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Transactional
     @GetMapping("/payment/{id}")
     public ResponseEntity<Resource> viewPayment(
             @PathVariable Long id

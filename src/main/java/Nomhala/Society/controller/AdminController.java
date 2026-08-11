@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.itextpdf.text.Document;
@@ -148,6 +149,7 @@ public class AdminController {
     // ADMIN PROFILE (FIXED JWT USAGE)
     // =========================================
 
+    @Transactional
     @GetMapping("/profile")
     public ResponseEntity<User> getAdminProfile(Authentication auth) {
 
@@ -167,6 +169,7 @@ public class AdminController {
     // PAYMENTS
     // =========================================
 
+    @Transactional
     @GetMapping("/payments")
     public ResponseEntity<List<PaymentAdminDTO>> getPayments() {
 
@@ -401,6 +404,7 @@ public class AdminController {
 
         return result;
     }
+    @Transactional
     @GetMapping("/payments/export")
     public void exportPdf(
             HttpServletResponse response
@@ -486,6 +490,7 @@ public class AdminController {
 // ADMIN PAYMENT UPLOAD
 // =========================================
 
+    @Transactional
     @PostMapping("/payments/upload")
     public ResponseEntity<PaymentDTO> uploadAdminPayment(
 
