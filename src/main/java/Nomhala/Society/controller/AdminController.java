@@ -149,9 +149,8 @@ public class AdminController {
     // ADMIN PROFILE (FIXED JWT USAGE)
     // =========================================
 
-    @Transactional
     @GetMapping("/profile")
-    public ResponseEntity<User> getAdminProfile(Authentication auth) {
+    public ResponseEntity<UserDTO> getAdminProfile(Authentication auth) {
 
         if (auth == null) {
             return ResponseEntity.status(401).build();
@@ -162,7 +161,16 @@ public class AdminController {
         User admin = userRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        return ResponseEntity.ok(admin);
+        UserDTO dto = new UserDTO();
+        dto.setId(admin.getId());
+        dto.setFirstName(admin.getFirstName());
+        dto.setLastName(admin.getLastName());
+        dto.setEmail(admin.getEmail());
+        dto.setPhone(admin.getPhone());
+        dto.setRole(String.valueOf(admin.getRole()));
+        dto.setEnabled(admin.isEnabled());
+
+        return ResponseEntity.ok(dto);
     }
 
     // =========================================
