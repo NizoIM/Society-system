@@ -1,6 +1,7 @@
 package Nomhala.Society.controller;
 
 import Nomhala.Society.dto.PaymentDTO;
+import Nomhala.Society.dto.UserDTO;
 import Nomhala.Society.entity.MemberQuery;
 import Nomhala.Society.entity.User;
 import Nomhala.Society.service.MemberService;
@@ -28,9 +29,8 @@ public class MemberController {
 
     // ================= PROFILE =================
 
-    @Transactional
     @GetMapping("/profile/{email}")
-    public ResponseEntity<User> profile(@PathVariable String email) {
+    public ResponseEntity<UserDTO> profile(@PathVariable String email) {
 
         User member = service.getProfile(email);
 
@@ -38,7 +38,16 @@ public class MemberController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(member);
+        UserDTO dto = new UserDTO();
+        dto.setId(member.getId());
+        dto.setFirstName(member.getFirstName());
+        dto.setLastName(member.getLastName());
+        dto.setEmail(member.getEmail());
+        dto.setPhone(member.getPhone());
+        dto.setRole(String.valueOf(member.getRole()));
+        dto.setEnabled(member.isEnabled());
+
+        return ResponseEntity.ok(dto);
     }
 
     // ================= QUERY =================
