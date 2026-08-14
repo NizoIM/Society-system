@@ -2,6 +2,7 @@ package Nomhala.Society.controller;
 
 import Nomhala.Society.dto.PaymentAdminDTO;
 import Nomhala.Society.dto.PaymentDTO;
+import Nomhala.Society.dto.UserDTO;
 import Nomhala.Society.entity.MemberQuery;
 import Nomhala.Society.entity.User;
 import Nomhala.Society.repository.MemberQueryRepository;
@@ -38,7 +39,7 @@ public class StaffController {
     // ================= STAFF PROFILE =================
 
     @GetMapping("/profile")
-    public ResponseEntity<User> getStaffProfile(
+    public ResponseEntity<UserDTO> getStaffProfile(
             Authentication authentication
     ) {
 
@@ -48,7 +49,16 @@ public class StaffController {
                 .orElseThrow(() ->
                         new RuntimeException("Staff user not found"));
 
-        return ResponseEntity.ok(staff);
+        UserDTO dto = new UserDTO();
+        dto.setId(staff.getId());
+        dto.setFirstName(staff.getFirstName());
+        dto.setLastName(staff.getLastName());
+        dto.setEmail(staff.getEmail());
+        dto.setPhone(staff.getPhone());
+        dto.setRole(String.valueOf(staff.getRole()));
+        dto.setEnabled(staff.isEnabled());
+
+        return ResponseEntity.ok(dto);
     }
 
     // ================= GET ALL QUERIES =================
