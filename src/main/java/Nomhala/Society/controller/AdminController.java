@@ -504,18 +504,17 @@ public class AdminController {
 
             Authentication authentication,
 
+            @RequestParam("memberEmail") String memberEmail,
+
             @RequestParam("amount") BigDecimal amount,
 
             @RequestParam("file") MultipartFile file
     ) {
 
-        String email =
-                authentication.getName();
-
         return ResponseEntity.ok(
 
                 paymentService.uploadPayment(
-                        email,
+                        memberEmail,
                         amount,
                         file
                 )
