@@ -1127,15 +1127,17 @@ async function rejectPayment(id) {
 async function uploadPayment() {
     const file = document.getElementById("proofFile").files[0];
     const amount = document.getElementById("amount").value;
+    const memberEmail = document.getElementById("memberEmail").value;
 
-    if (!file || !amount) {
-        alert("Select file + amount");
+    if (!file || !amount || !memberEmail) {
+        alert("Select member email + file + amount");
         return;
     }
 
     const form = new FormData();
     form.append("file", file);
     form.append("amount", amount);
+    form.append("memberEmail", memberEmail);
 
     const res = await fetch(PAYMENT_UPLOAD_API, {
         method: "POST",
