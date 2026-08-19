@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import java.time.LocalDate;
 
@@ -182,7 +183,7 @@ public class PaymentService {
             // =========================================
 
             int monthsCovered =
-                    amount.divide(MONTHLY_FEE)
+                    amount.divide(MONTHLY_FEE, 0, RoundingMode.HALF_UP)
                             .intValue();
 
             int ahead =
