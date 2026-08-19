@@ -9,6 +9,7 @@ import Nomhala.Society.service.PaymentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,8 +74,16 @@ public class MemberController {
 
             @PathVariable String email,
             @RequestParam("amount") BigDecimal amount,
-            @RequestParam("file") MultipartFile file
+            @RequestParam("file") MultipartFile file,
+            Authentication auth
     ) {
+
+        // Verify the authenticated user is uploading for themselves (unless admin)
+        String userEmail = auth.getName();
+        if (!userEmail.equals(email) && !auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).build();
+        }
 
         return ResponseEntity.ok(
                 paymentService.uploadPayment(email, amount, file)
