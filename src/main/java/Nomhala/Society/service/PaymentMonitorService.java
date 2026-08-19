@@ -91,6 +91,11 @@ public class PaymentMonitorService {
                     "Auto-generated overdue payment"
             );
 
+            // Required field - auto-generated payments have no uploaded file
+            overdue.setOriginalFileName(
+                    "AUTO_GENERATED"
+            );
+
             paymentRepo.save(overdue);
 
             System.out.println(
