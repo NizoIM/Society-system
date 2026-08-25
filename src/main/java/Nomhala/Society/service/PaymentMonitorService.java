@@ -96,6 +96,11 @@ public class PaymentMonitorService {
                     "AUTO_GENERATED"
             );
 
+            // Required field - auto-generated payments have no proof file path
+            overdue.setProofPath(
+                    "AUTO_GENERATED"
+            );
+
             paymentRepo.save(overdue);
 
             System.out.println(
