@@ -81,7 +81,7 @@ public class MemberController {
         // Verify the authenticated user is uploading for themselves (unless admin)
         String userEmail = auth.getName();
         if (!userEmail.equals(email) && !auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                .anyMatch(a -> a.getAuthority().contains("ADMIN"))) {
             return ResponseEntity.status(403).build();
         }
 

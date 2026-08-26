@@ -37,8 +37,8 @@ public class FileController {
         // Verify the authenticated user owns this payment
         String userEmail = auth.getName();
         boolean isAdminOrStaff = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
-                        || a.getAuthority().equals("ROLE_STAFF"));
+                .anyMatch(a -> a.getAuthority().contains("ADMIN")
+                        || a.getAuthority().contains("STAFF"));
 
         if (!isAdminOrStaff
                 && (payment.getMember() == null
